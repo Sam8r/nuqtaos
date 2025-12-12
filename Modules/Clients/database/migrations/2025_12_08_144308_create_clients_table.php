@@ -13,18 +13,18 @@ return new class extends Migration
     {
         Schema::create('clients', function (Blueprint $table) {
             $table->id();
-            $table->string('company_name_en');
-            $table->string('company_name_ar');
-            $table->string('contact_person_details');
+            $table->json('company_name');
+            $table->string('contact_person_details')->nullable();
             $table->string('address');
             $table->string('tax_number')->nullable();
-//            $table->json('registration_docs')->nullable();
+            $table->json('registration_documents')->nullable();
             $table->unsignedInteger('credit_limit');
-            $table->string('payment_terms')->nullable();
-            $table->string('industry_type')->nullable();
+            $table->json('payment_terms')->nullable();
+            $table->json('industry_type')->nullable();
             $table->string('status');
             $table->string('tier');
-            $table->string('geographic_location');
+            $table->string('country');
+            $table->softDeletes();
             $table->timestamps();
         });
     }
