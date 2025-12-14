@@ -51,11 +51,11 @@ class ClientInfolist
                             ->label('Image')
                             ->square()
                             ->size(200)
-                            ->extraImgAttributes(['class' => 'inline-block cursor-pointer hover:opacity-80 transition-opacity'])
+                            ->extraImgAttributes(['class' => 'cursor-pointer hover:opacity-80 transition-opacity'])
                             ->action(
                                 MediaAction::make('view')
                                     ->media(fn ($state) => $state)
-                                    ->modalHeading('View Image')
+                                    ->modalHeading('View Registration Documents Image')
                                     ->slideOver()
                             ),
                         TextEntry::make('name')
