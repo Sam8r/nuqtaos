@@ -32,8 +32,8 @@ class CategoryInfolist
                             ->modalHeading('View Category Image')
                             ->slideOver()
                     ),
-                TextEntry::make('sort_order')
-                    ->label('Sorting Order'),
+                TextEntry::make('priority')
+                    ->label('Priority'),
             ]);
     }
 }

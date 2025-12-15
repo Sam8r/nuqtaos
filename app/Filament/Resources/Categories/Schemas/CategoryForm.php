@@ -34,13 +34,12 @@ class CategoryForm
                     ->disk('public')
                     ->visibility('public'),
 
-                Select::make('sort_order')
-                    ->label('Sorting Order')
+                Select::make('priority')
+                    ->label('Priority')
                     ->options([
-                        1 => '1',
-                        2 => '2',
-                        3 => '3',
-                        4 => '4',
+                        1 => 'Important',
+                        2 => 'Main',
+                        3 => 'Secondary',
                     ])
                     ->default(1),
             ]);

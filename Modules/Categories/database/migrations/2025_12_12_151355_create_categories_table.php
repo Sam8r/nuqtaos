@@ -16,7 +16,7 @@ return new class extends Migration
             $table->json('name');
             $table->string('description')->nullable();
             $table->string('image_path')->nullable();
-            $table->unsignedTinyInteger('sort_order')->default(1)->nullable();
+            $table->unsignedTinyInteger('priority')->default(1)->nullable();
             $table->softDeletes();
             $table->timestamps();
         });
