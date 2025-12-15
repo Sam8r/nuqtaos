@@ -13,6 +13,7 @@
         "laravel/tinker": "^2.10.1",
         "nwidart/laravel-modules": "^12.0",
         "parfaitementweb/filament-country-field": "^2.5",
+        "simplesoftwareio/simple-qrcode": "^4.2",
         "spatie/laravel-translatable": "^6.12",
         "umpirsky/country-list": "^2.0"
     },
