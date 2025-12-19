@@ -5,6 +5,10 @@ namespace Database\Seeders;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Modules\Categories\Database\Seeders\CategoriesDatabaseSeeder;
+use Modules\Clients\Database\Seeders\ClientsDatabaseSeeder;
+use Modules\Products\Database\Seeders\ProductsDatabaseSeeder;
+use Modules\Quotations\Database\Seeders\QuotationsDatabaseSeeder;
 
 class DatabaseSeeder extends Seeder
 {
@@ -17,9 +21,19 @@ class DatabaseSeeder extends Seeder
     {
         // User::factory(10)->create();
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
+        User::firstOrCreate(
+            ['email' => 'test@example.com'],
+            [
+                'name' => 'Test User',
+                'password' => bcrypt('password'),
+            ]
+        );
+
+        $this->call([
+            CategoriesDatabaseSeeder::class,
+            ClientsDatabaseSeeder::class,
+            ProductsDatabaseSeeder::class,
+            QuotationsDatabaseSeeder::class,
         ]);
     }
 }
