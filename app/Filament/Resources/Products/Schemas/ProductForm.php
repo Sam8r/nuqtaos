@@ -26,7 +26,9 @@ class ProductForm
 
                 TextInput::make('sku')
                     ->label('SKU')
-                    ->unique(ignoreRecord: true),
+                    ->maxLength(255)
+                    ->unique(ignoreRecord: true)
+                    ->default(fn () => 'SKU-' . strtoupper(Str::random(6))),
 
                 TextInput::make('name.en')
                     ->label('Name (EN)')
@@ -64,18 +66,12 @@ class ProductForm
                     ->label('Unit')
                     ->placeholder('e.g. piece, kg'),
 
-                TextInput::make('qr_value')
-                    ->label('QR Code')
-                    ->placeholder('Enter manually or click Generate')
-                    ->reactive()
-                    ->suffixAction(
-                        Action::make('generate')
-                            ->label('Generate')
-                            ->action(function ($record, $livewire, $get, $set) {
-                                $set('qr_value', (string) Str::uuid());
-                            })
-                            ->button()
-                    ),
+                FileUpload::make('barcode_path')
+                    ->label('Barcode')
+                    ->image()
+                    ->disk('public')
+                    ->directory('barcodes')
+                    ->visibility('public'),
 
                 FileUpload::make('images')
                     ->label('Product Images')
@@ -84,6 +80,7 @@ class ProductForm
                     ->reorderable()
                     ->disk('public')
                     ->visibility('public'),
+
                 Select::make('status')
                     ->label('Status')
                     ->options([

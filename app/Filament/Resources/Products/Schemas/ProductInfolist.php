@@ -16,7 +16,8 @@ class ProductInfolist
         return $schema
             ->components([
                 TextEntry::make('code')->label('Product Code'),
-
+                TextEntry::make('sku')
+                    ->label('SKU'),
                 TextEntry::make('name')
                     ->label('Name'),
                 TextEntry::make('description')
@@ -31,11 +32,6 @@ class ProductInfolist
                     }),
                 TextEntry::make('unit')
                     ->label('Unit'),
-                TextEntry::make('sku')
-                    ->label('SKU'),
-                ViewEntry::make('qr_code')
-                    ->label('QR Code')
-                    ->view('filament.infolists.entries.qr-code'),
                 RepeatableEntry::make('images')
                     ->label('Product Images')
                     ->state(fn ($record) => collect($record->images ?? [])
@@ -61,6 +57,15 @@ class ProductInfolist
                     ])
                     ->grid(2)
                     ->columnSpan(1),
+                ImageEntry::make('barcode_path')
+                    ->label('Barcode')
+                    ->extraImgAttributes(['style' => 'width:200px; height:auto;'])                    ->getStateUsing(fn ($record) => asset('storage/' . $record->barcode_path))
+                    ->action(
+                        MediaAction::make('view')
+                            ->media(fn ($state) => $state)
+                            ->modalHeading('View Barcode')
+                            ->slideOver()
+                    ),
                 TextEntry::make('category.name')->label('Category'),
                 TextEntry::make('status')
                     ->label('Status')

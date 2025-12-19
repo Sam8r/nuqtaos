@@ -16,11 +16,11 @@ return new class extends Migration
             $table->string('code')->unique();
             $table->json('name');
             $table->json('description')->nullable();
-            $table->unsignedMediumInteger('price');
+            $table->decimal('price', 15, 2);
             $table->enum('type', ['Service', 'Physical']);
             $table->string('unit')->nullable();
             $table->string('sku')->nullable()->unique();
-            $table->string('qr_value')->nullable()->unique();
+            $table->string('barcode_path')->nullable();
             $table->string('images')->nullable();
             $table->enum('status', ['Active', 'Inactive', 'Discontinued'])->default('active');
             $table->foreignId('category_id')->constrained('categories')->onDelete('cascade');
