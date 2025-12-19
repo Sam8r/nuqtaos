@@ -20,7 +20,9 @@ class CategoryInfolist
                 ImageEntry::make('image_path')
                     ->label('Category Image')
                     ->disk('public')
-                    ->getStateUsing(fn ($record) => asset('storage/' . $record->image_path))
+                    ->getStateUsing(fn ($record) => $record->image_path
+                        ? asset('storage/' . $record->image_path)
+                        : null)
                     ->square()
                     ->size(200)
                     ->extraImgAttributes([
