@@ -2,5 +2,6 @@
     "Clients": true,
     "Categories": true,
     "Products": true,
-    "Quotations": true
+    "Quotations": true,
+    "Invoices": true
 }
