@@ -19,9 +19,13 @@ return new class extends Migration
             $table->string('status')->default('Draft');
             $table->text('terms_and_conditions')->nullable();
             $table->decimal('subtotal', 15, 2);
-            $table->decimal('discount_total', 15, 2);
-            $table->decimal('tax_total', 15, 2);
-            $table->decimal('total');
+            $table->decimal('discount_value', 15, 2)->default(0);
+            $table->decimal('discount_percent', 5, 2)->default(0);
+            $table->decimal('tax_value', 15, 2)->default(0);
+            $table->decimal('tax_percent', 5, 2)->default(0);
+            $table->decimal('discount_total', 15, 2)->default(0);
+            $table->decimal('tax_total', 15, 2)->default(0);
+            $table->decimal('total', 15, 2);
             $table->foreignId('client_id')->constrained('clients')->onDelete('cascade');
             $table->softDeletes();
             $table->timestamps();

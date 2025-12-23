@@ -21,11 +21,11 @@ class QuotationItem extends Model
         'description',
         'quantity',
         'unit_price',
-        'discount_fixed',
+        'discount_value',
         'discount_percent',
         'total_price',
-        'product_id',
         'quotation_id',
+        'product_id',
     ];
 
     /**

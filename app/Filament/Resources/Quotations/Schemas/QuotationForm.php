@@ -20,6 +20,7 @@ class QuotationForm
         return $schema->components([
             Grid::make(3)->schema([
                 TextInput::make('number')
+                    ->label('Quotation #')
                     ->required()
                     ->unique(ignoreRecord: true)
                     ->default(fn () => 'QT-' . now()->format('Ymd') . '-' . Str::upper(Str::random(4))),
@@ -32,6 +33,42 @@ class QuotationForm
                 DatePicker::make('valid_until')
                     ->required()
                     ->minDate(fn (callable $get) => $get('issue_date')),
+
+                TextInput::make('tax_value')
+                    ->label('Tax Value')
+                    ->numeric()
+                    ->minValue(0)
+                    ->default(0)
+                    ->live(debounce: 300)
+                    ->disabled(fn (callable $get) => (float) $get('tax_percent') > 0)
+                    ->reactive()
+                    ->extraInputAttributes([
+                        'onfocus' => "if(this.value == '0') this.value='';",
+                        'onblur' => "if(this.value == '') this.value='0';",
+                    ])
+                    ->afterStateUpdated(function ($state, callable $set, callable $get) {
+                        $set($state !== null && $state !== '' ? (float)$state : 0, null);
+                        self::calculateTotals($set, $get);
+                    }),
+
+                TextInput::make('tax_percent')
+                    ->label('Tax (%)')
+                    ->numeric()
+                    ->default(0)
+                    ->minValue(0)
+                    ->maxValue(100)
+                    ->dehydrated(fn ($state) => filled($state))
+                    ->live(debounce: 300)
+                    ->disabled(fn (callable $get) => (float) $get('tax_value') > 0)
+                    ->reactive()
+                    ->extraInputAttributes([
+                        'onfocus' => "if(this.value == '0') this.value='';",
+                        'onblur' => "if(this.value == '') this.value='0';",
+                    ])
+                    ->afterStateUpdated(function ($state, callable $set, callable $get) {
+                        $set($state !== null && $state !== '' ? (float)$state : 0, null);
+                        self::calculateTotals($set, $get);
+                    }),
 
                 Select::make('status')
                     ->options([
@@ -48,6 +85,7 @@ class QuotationForm
             Select::make('client_id')
                 ->relationship('client', 'company_name')
                 ->searchable()
+                ->preload()
                 ->required(),
 
             Textarea::make('terms_and_conditions')
@@ -62,10 +100,18 @@ class QuotationForm
                     Select::make('product_id')
                         ->relationship('product', 'name')
                         ->searchable()
+                        ->preload()
                         ->live()
+                        ->disabled(fn (callable $get) => (bool) $get('custom_name'))
                         ->afterStateUpdated(function ($state, callable $set, callable $get) {
+                            $set('quantity', 1);
+                            $set('total_price', 0);
+
                             if (! $state) {
                                 $set('description', null);
+                                $set('unit_price', 0);
+
+                                self::calculateTotals($set, $get);
                                 return;
                             }
 
@@ -83,7 +129,9 @@ class QuotationForm
                         }),
 
                     TextInput::make('custom_name')
-                        ->label('Custom Product Name'),
+                        ->label('Custom Product Name')
+                        ->nullable()
+                        ->disabled(fn (callable $get) => (bool) $get('product_id')),
 
                     Textarea::make('description'),
 
@@ -91,6 +139,7 @@ class QuotationForm
                         TextInput::make('quantity')
                             ->numeric()
                             ->required()
+                            ->default(1)
                             ->minValue(1)
                             ->live(debounce: 300)
                             ->afterStateUpdated(function ($state, callable $set, callable $get) {
@@ -107,21 +156,37 @@ class QuotationForm
                                 self::calculateTotals($set, $get);
                             }),
 
-                        TextInput::make('discount_fixed')
+                        TextInput::make('discount_value')
+                            ->label('Discount Value')
                             ->numeric()
                             ->default(0)
+                            ->minValue(0)
                             ->live(debounce: 300)
+                            ->disabled(fn (callable $get) => (float) $get('discount_percent') > 0)
+                            ->extraInputAttributes([
+                                'onfocus' => "if(this.value == '0') this.value='';",
+                                'onblur' => "if(this.value == '') this.value='0';",
+                            ])
                             ->afterStateUpdated(function ($state, callable $set, callable $get) {
+                                $set($state !== null && $state !== '' ? (float)$state : 0, null);
                                 self::calculateItemTotal($set, $get);
                                 self::calculateTotals($set, $get);
                             }),
 
                         TextInput::make('discount_percent')
+                            ->label('Discount (%)')
                             ->numeric()
                             ->default(0)
+                            ->minValue(0)
                             ->maxValue(100)
                             ->live(debounce: 300)
+                            ->disabled(fn (callable $get) => (float) $get('discount_value') > 0)
+                            ->extraInputAttributes([
+                                'onfocus' => "if(this.value == '0') this.value='';",
+                                'onblur' => "if(this.value == '') this.value='0';",
+                            ])
                             ->afterStateUpdated(function ($state, callable $set, callable $get) {
+                                $set($state !== null && $state !== '' ? (float)$state : 0, null);
                                 self::calculateItemTotal($set, $get);
                                 self::calculateTotals($set, $get);
                             }),
@@ -142,23 +207,19 @@ class QuotationForm
             Grid::make(4)->schema([
                 TextInput::make('subtotal')
                     ->numeric()
-                    ->readOnly()
-                    ->dehydrated(),
+                    ->readOnly(),
 
                 TextInput::make('discount_total')
                     ->numeric()
-                    ->readOnly()
-                    ->dehydrated(),
+                    ->readOnly(),
 
                 TextInput::make('tax_total')
                     ->numeric()
-                    ->readOnly()
-                    ->dehydrated(),
+                    ->readOnly(),
 
                 TextInput::make('total')
                     ->numeric()
-                    ->readOnly()
-                    ->dehydrated(),
+                    ->readOnly(),
             ]),
         ]);
     }
@@ -167,44 +228,53 @@ class QuotationForm
     {
         $qty = (float) ($get('quantity') ?? 0);
         $price = (float) ($get('unit_price') ?? 0);
-        $fixed = (float) ($get('discount_fixed') ?? 0);
+        $fixed = (float) ($get('discount_value') ?? 0);
         $percent = (float) ($get('discount_percent') ?? 0);
 
         $lineTotal = $qty * $price;
 
-        $discount = $fixed + ($lineTotal * ($percent / 100));
+        $discount = $fixed > 0
+            ? $fixed
+            : ($lineTotal * ($percent / 100));
 
         $discount = min($discount, $lineTotal);
 
-        $total = $lineTotal - $discount;
-
-        $set('total_price', $total);
+        $set('total_price', $lineTotal - $discount);
     }
 
     protected static function calculateTotals(callable $set, callable $get): void
     {
-        $items = $get('items') ?? [];
+        $items = $get('../../items') ?? [];
 
-        $subtotal = collect($items)->sum(function ($item) {
-            return (float) ($item['quantity'] ?? 0) * (float) ($item['unit_price'] ?? 0);
-        });
+        $subtotal = collect($items)->sum(fn ($item) =>
+            ($item['quantity'] ?? 0) * ($item['unit_price'] ?? 0)
+        );
 
         $discountTotal = collect($items)->sum(function ($item) {
             $qty = (float) ($item['quantity'] ?? 0);
             $price = (float) ($item['unit_price'] ?? 0);
-            $fixed = (float) ($item['discount_fixed'] ?? 0);
+            $fixed = (float) ($item['discount_value'] ?? 0);
             $percent = (float) ($item['discount_percent'] ?? 0);
 
             $lineTotal = $qty * $price;
 
-            return $fixed + ($lineTotal * ($percent / 100));
+            return $fixed > 0
+                ? $fixed
+                : ($lineTotal * ($percent / 100));
         });
 
-        $total = max($subtotal - $discountTotal, 0);
+        $totalBeforeTax = max($subtotal - $discountTotal, 0);
 
-        $set('subtotal', $subtotal);
-        $set('discount_total', $discountTotal);
-        $set('tax_total', 0);
-        $set('total', $total);
+        $taxValue = (float) ($get('../../tax_value') ?? 0);
+        $taxPercent = (float) ($get('../../tax_percent') ?? 0);
+
+        $taxTotal = $taxValue > 0
+            ? $taxValue
+            : ($totalBeforeTax * ($taxPercent / 100));
+
+        $set('../../subtotal', round($subtotal, 2));
+        $set('../../discount_total', round($discountTotal, 2));
+        $set('../../tax_total', round($taxTotal, 2));
+        $set('../../total', round($totalBeforeTax + $taxTotal, 2));
     }
 }

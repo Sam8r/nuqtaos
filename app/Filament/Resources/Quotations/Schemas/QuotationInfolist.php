@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Quotations\Schemas;
 
+use Filament\Facades\Filament;
 use Filament\Infolists\Components\RepeatableEntry;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Components\Grid;
@@ -41,6 +42,18 @@ class QuotationInfolist
                         TextEntry::make('subtotal')
                             ->label('Subtotal'),
 
+                        TextEntry::make('discount_value')
+                            ->label('Discount Value'),
+
+                        TextEntry::make('discount_percent')
+                            ->label('Discount (%)'),
+
+                        TextEntry::make('tax_value')
+                            ->label('Tax Value'),
+
+                        TextEntry::make('tax_percent')
+                            ->label('Tax (%)'),
+
                         TextEntry::make('discount_total')
                             ->label('Discount Total'),
 
@@ -60,11 +73,12 @@ class QuotationInfolist
                                     ->schema([
                                         TextEntry::make('product_id')
                                             ->label('Product')
-                                            ->state(function ($record) {
-                                                return $record->product_id
-                                                    ? ($record->product->name ?? '')
-                                                    : ($record->custom_name ?? '');
-                                            }),
+                                            ->state(fn ($record) => $record->product_id ? ($record->product->name ?? $record->custom_name) : $record->custom_name)
+                                            ->state(fn ($record) => $record->product_id ? ($record->product->name ?? $record->custom_name) : $record->custom_name)
+                                            ->url(fn ($record) => $record->product_id
+                                                ? route('filament.admin.resources.products.view', $record->product_id)
+                                                : null
+                                            ),
 
                                         TextEntry::make('description')
                                             ->label('Description')
@@ -79,6 +93,12 @@ class QuotationInfolist
 
                                         TextEntry::make('total_price')
                                             ->label('Total'),
+
+                                        TextEntry::make('discount_value')
+                                            ->label('Discount Value'),
+
+                                        TextEntry::make('discount_percent')
+                                            ->label('Discount (%)'),
                                     ]),
                             ])
                             ->label('Quotation Items')
