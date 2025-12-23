@@ -2,18 +2,21 @@
 
 namespace App\Filament\Resources\Quotations\Tables;
 
+use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ForceDeleteBulkAction;
 use Filament\Actions\RestoreBulkAction;
 use Filament\Actions\ViewAction;
+use Filament\Forms\Components\Radio;
 use Filament\Tables\Columns\BadgeColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Modules\Quotations\Services\QuotationPdfService;
 
 class QuotationsTable
 {
@@ -76,6 +79,25 @@ class QuotationsTable
             ->recordActions([
                 ViewAction::make(),
                 EditAction::make(),
+                Action::make('print')
+                    ->label('Print')
+                    ->icon('heroicon-o-document-text')
+                    ->color('primary')
+                    ->modalHeading('Select Print Language')
+                    ->form([
+                        Radio::make('lang')
+                            ->label('Language')
+                            ->options([
+                                'ar' => 'Arabic',
+                                'en' => 'English',
+                            ])
+                            ->default('en')
+                            ->required(),
+                    ])
+                    ->action(function (array $data, $record) {
+                        $pdfService = new QuotationPdfService();
+                        return $pdfService->generatePdf($record, $data['lang']);
+                    }),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
