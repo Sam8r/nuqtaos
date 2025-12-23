@@ -4,5 +4,6 @@
     "Products": true,
     "Quotations": true,
     "Invoices": true,
-    "Departments": true
+    "Departments": true,
+    "Positions": true
 }
