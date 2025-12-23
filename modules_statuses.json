@@ -3,5 +3,6 @@
     "Categories": true,
     "Products": true,
     "Quotations": true,
-    "Invoices": true
+    "Invoices": true,
+    "Departments": true
 }
