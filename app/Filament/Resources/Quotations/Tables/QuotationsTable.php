@@ -53,7 +53,8 @@ class QuotationsTable
                     ]),
 
                 TextColumn::make('total')
-                    ->sortable(),
+                    ->sortable()
+                    ->money(fn ($record) => $record->currency),
             ])
             ->filters([
                 SelectFilter::make('computed_status')

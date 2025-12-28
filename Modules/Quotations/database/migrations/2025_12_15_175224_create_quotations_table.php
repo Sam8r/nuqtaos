@@ -17,6 +17,7 @@ return new class extends Migration
             $table->date('issue_date');
             $table->date('valid_until');
             $table->string('status')->default('Draft');
+            $table->string('currency', 3);
             $table->text('terms_and_conditions')->nullable();
             $table->decimal('subtotal', 15, 2);
             $table->decimal('discount_value', 15, 2)->default(0);

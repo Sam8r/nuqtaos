@@ -22,6 +22,7 @@ class Quotation extends Model
         'issue_date',
         'valid_until',
         'status',
+        'currency',
         'terms_and_conditions',
         'subtotal',
         'discount_value',
