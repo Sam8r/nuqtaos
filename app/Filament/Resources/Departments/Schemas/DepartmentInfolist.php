@@ -12,6 +12,10 @@ class DepartmentInfolist
         return $schema
             ->components([
                 TextEntry::make('name'),
+                TextEntry::make('parent.name')
+                    ->label('Parent Department')
+                    ->url(fn ($record) => $record->parent ? route('filament.admin.resources.departments.view', $record->parent) : null
+                    ),
             ]);
     }
 }

@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('departments', function (Blueprint $table) {
             $table->id();
             $table->json('name');
+            $table->foreignId('parent_id')->nullable()->constrained('departments')->onDelete('cascade');
             $table->softDeletes();
             $table->timestamps();
         });

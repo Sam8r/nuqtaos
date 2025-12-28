@@ -18,7 +18,8 @@ class DepartmentsTable
     {
         return $table
             ->columns([
-                TextColumn::make('name')
+                TextColumn::make('name'),
+                TextColumn::make('parent.name')->label('Parent Department'),
             ])
             ->filters([
                 TrashedFilter::make(),

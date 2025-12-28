@@ -18,6 +18,7 @@ class Department extends Model
      */
     protected $fillable = [
         'name',
+        'parent_id',
     ];
 
     /**
@@ -26,6 +27,22 @@ class Department extends Model
     public $translatable = [
         'name',
     ];
+
+    /**
+     * Get the parent department.
+     */
+    public function parent()
+    {
+        return $this->belongsTo(Department::class, 'parent_id');
+    }
+
+    /**
+     * Get the subdepartments for the department.
+     */
+    public function subdepartments()
+    {
+        return $this->hasMany(Department::class, 'parent_id');
+    }
 
     // protected static function newFactory(): DepartmentFactory
     // {
