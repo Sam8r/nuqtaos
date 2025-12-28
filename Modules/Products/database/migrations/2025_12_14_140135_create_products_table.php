@@ -17,6 +17,7 @@ return new class extends Migration
             $table->json('name');
             $table->json('description')->nullable();
             $table->decimal('price', 15, 2);
+            $table->string('currency', 3);
             $table->enum('type', ['Service', 'Physical']);
             $table->string('unit')->nullable();
             $table->string('sku')->nullable()->unique();

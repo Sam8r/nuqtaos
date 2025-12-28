@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('tax_number')->nullable();
             $table->json('registration_documents')->nullable();
             $table->unsignedInteger('credit_limit');
+            $table->string('currency', 3);
             $table->json('payment_terms')->nullable();
             $table->json('industry_type')->nullable();
             $table->string('status');

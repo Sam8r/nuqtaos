@@ -8,6 +8,7 @@ use Filament\Actions\EditAction;
 use Filament\Actions\ForceDeleteBulkAction;
 use Filament\Actions\RestoreBulkAction;
 use Filament\Actions\ViewAction;
+use Filament\Infolists\Components\TextEntry;
 use Filament\Tables\Columns\BadgeColumn;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
@@ -29,7 +30,8 @@ class ProductsTable
                     ->searchable(),
                 TextColumn::make('price')
                     ->label('Price')
-                    ->sortable(),
+                    ->sortable()
+                    ->money(fn ($record) => $record->currency),
                 ImageColumn::make('first_image')
                     ->label('Image')
                     ->getStateUsing(function ($record) {

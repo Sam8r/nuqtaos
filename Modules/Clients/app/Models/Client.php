@@ -24,6 +24,7 @@ class Client extends Model
         'tax_number',
         'registration_documents',
         'credit_limit',
+        'currency',
         'payment_terms',
         'industry_type',
         'status',

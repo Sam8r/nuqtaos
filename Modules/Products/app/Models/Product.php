@@ -25,6 +25,7 @@ class Product extends Model
         'name',
         'description',
         'price',
+        'currency',
         'type',
         'unit',
         'sku',

@@ -7,15 +7,27 @@ use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 use Filament\Forms\Components\TextInput;
+use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Schema;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
+use Modules\Settings\Models\Setting;
 use Parfaitementweb\FilamentCountryField\Forms\Components\Country;
 
 class ClientForm
 {
     public static function configure(Schema $schema): Schema
     {
+        $currencies = json_decode(
+            File::get(
+                base_path('vendor/umpirsky/currency-list/data/en/currency.json')
+            ),
+            true
+        );
+
+        $defaultCurrency = Setting::first()?->currency;
+
         return $schema
             ->components([
                 TextInput::make('company_name.en')
@@ -86,10 +98,20 @@ class ClientForm
                         return Str::slug($originalName) . '-' . rand(1000, 9999) . '.' . $extension;
                     })
                     ->helperText('Allowed file types: jpg, jpeg, png, webp, pdf, doc, docx.'),
-                TextInput::make('credit_limit')
-                    ->label('Credit Limit')
-                    ->numeric()
-                    ->required(),
+                Grid::make(2)
+                    ->schema([
+                        TextInput::make('credit_limit')
+                            ->label('Credit Limit')
+                            ->numeric()
+                            ->required(),
+
+                        Select::make('credit_currency')
+                            ->label('Currency')
+                            ->options($currencies)
+                            ->default($defaultCurrency)
+                            ->searchable()
+                            ->required(),
+                    ]),
                 TextInput::make('payment_terms.en')
                     ->label('Payment Terms (EN)')
                     ->maxLength(255),

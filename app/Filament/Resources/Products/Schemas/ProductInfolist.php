@@ -23,7 +23,8 @@ class ProductInfolist
                 TextEntry::make('description')
                     ->label('Description'),
                 TextEntry::make('price')
-                    ->label('Price'),
+                    ->label('Price')
+                    ->money(fn($record) => $record->currency),
                 TextEntry::make('type')
                     ->label('Type')
                     ->badge(fn ($state) => match ($state) {

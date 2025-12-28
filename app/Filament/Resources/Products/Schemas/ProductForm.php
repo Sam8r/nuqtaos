@@ -7,14 +7,26 @@ use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
+use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Schema;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 use Modules\Categories\Models\Category;
+use Modules\Settings\Models\Setting;
 
 class ProductForm
 {
     public static function configure(Schema $schema): Schema
     {
+        $currencies = json_decode(
+            File::get(
+                base_path('vendor/umpirsky/currency-list/data/en/currency.json')
+            ),
+            true
+        );
+
+        $defaultCurrency = Setting::first()?->currency;
+
         return $schema
             ->components([
                 TextInput::make('code')
@@ -48,11 +60,21 @@ class ProductForm
                     ->label('Description (AR)')
                     ->rows(3),
 
-                TextInput::make('price')
-                    ->label('Price')
-                    ->numeric()
-                    ->minValue(1)
-                    ->required(),
+                Grid::make(2)
+                    ->schema([
+                        TextInput::make('price')
+                            ->label('Price')
+                            ->numeric()
+                            ->minValue(1)
+                            ->required(),
+
+                        Select::make('currency')
+                            ->label('Currency')
+                            ->options($currencies)
+                            ->default($defaultCurrency)
+                            ->searchable()
+                            ->required(),
+                    ]),
 
                 Select::make('type')
                     ->label('Type')

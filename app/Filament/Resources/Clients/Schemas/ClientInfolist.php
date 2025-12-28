@@ -80,8 +80,9 @@ class ClientInfolist
                             ->html()
                             ->placeholder('No documents available'),
                     ]),
-
-                TextEntry::make('credit_limit')->label('Credit Limit')->money('EGP'),
+                TextEntry::make('credit_limit')
+                    ->label('Credit Limit')
+                    ->money(fn ($record) => $record->credit_currency),
                 TextEntry::make('payment_terms')->label('Payment Terms'),
                 TextEntry::make('industry_type')->label('Industry Type'),
                 TextEntry::make('status')->label('Status')->badge(),
