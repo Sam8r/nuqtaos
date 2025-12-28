@@ -10,6 +10,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Schema;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
+use Modules\Positions\Models\Position;
 
 class EmployeeForm
 {
@@ -61,7 +62,13 @@ class EmployeeForm
                     ->required(),
                 Select::make('position_id')
                     ->relationship('position', 'name')
-                    ->required(),
+                    ->required()
+                    ->reactive()
+                    ->afterStateUpdated(function ($state, callable $set, $get) {
+
+                        $position = Position::find($state);
+                        $set('department_id', $position->department_id);
+                    }),
                 Select::make('department_id')
                     ->relationship('department', 'name')
                     ->required(),
