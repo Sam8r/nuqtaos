@@ -23,6 +23,8 @@ class PositionForm
                 Select::make('department_id')
                     ->label('Department')
                     ->relationship('department', 'name')
+                    ->searchable()
+                    ->preload()
                     ->required(),
             ]);
     }
