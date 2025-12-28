@@ -6,5 +6,6 @@
     "Invoices": true,
     "Departments": true,
     "Positions": true,
-    "Employees": true
+    "Employees": true,
+    "Settings": true
 }
