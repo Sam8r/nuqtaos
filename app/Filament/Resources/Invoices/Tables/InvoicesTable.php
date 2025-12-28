@@ -16,6 +16,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Modules\Invoices\Services\InvoicesPdfService;
 use Modules\Quotations\Services\QuotationPdfService;
+use Modules\Settings\Models\Setting;
 
 class InvoicesTable
 {
@@ -51,7 +52,8 @@ class InvoicesTable
                     ]),
 
                 TextColumn::make('total')
-                    ->sortable(),
+                    ->sortable()
+                    ->money(fn ($record) => $record->currency),
             ])
             ->filters([
                 SelectFilter::make('computed_status')
@@ -85,19 +87,27 @@ class InvoicesTable
             ->recordActions([
                 ViewAction::make(),
                 EditAction::make(),
-                Action::make('print')
+                Action::make('print_direct')
                     ->label('Print')
                     ->icon('heroicon-o-document-text')
                     ->color('primary')
+                    ->visible(fn () => filled(Setting::query()->value('default_printable_language')))
+                    ->action(function ($record) {
+                        $language = Setting::query()->value('default_printable_language');
+                        $pdfService = new InvoicesPdfService();
+                        return $pdfService->generatePdf($record, $language);
+                    }),
+
+                Action::make('print_modal')
+                    ->label('Print')
+                    ->icon('heroicon-o-document-text')
+                    ->color('primary')
+                    ->visible(fn () => blank(Setting::query()->value('default_printable_language')))
                     ->modalHeading('Select Print Language')
                     ->form([
                         Radio::make('lang')
                             ->label('Language')
-                            ->options([
-                                'ar' => 'Arabic',
-                                'en' => 'English',
-                            ])
-                            ->default('en')
+                            ->options(['ar' => 'Arabic', 'en' => 'English'])
                             ->required(),
                     ])
                     ->action(function (array $data, $record) {

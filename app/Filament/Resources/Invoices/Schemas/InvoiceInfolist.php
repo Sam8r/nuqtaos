@@ -67,6 +67,16 @@ class InvoiceInfolist
 
                         TextEntry::make('total')
                             ->label('Total'),
+
+                        TextEntry::make('total_paid')
+                            ->label('Total Paid')
+                            ->state(fn ($record) => $record->payments()->sum('amount'))
+                            ->money(fn ($record) => $record->currency),
+
+                        TextEntry::make('outstanding_balance')
+                            ->label('Balance Due')
+                            ->state(fn ($record) => $record->total - $record->payments()->sum('amount'))
+                            ->money(fn ($record) => $record->currency),
                     ])
                     ->columns(2),
 
