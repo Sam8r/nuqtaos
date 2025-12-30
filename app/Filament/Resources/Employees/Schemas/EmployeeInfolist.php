@@ -17,7 +17,7 @@ class EmployeeInfolist
             ->components([
                 TextEntry::make('id')->label('Employee ID'),
                 TextEntry::make('name')->label('Name'),
-                TextEntry::make('email'),
+                TextEntry::make('user.email'),
                 TextEntry::make('phone'),
                 TextEntry::make('emergency_contact'),
                 TextEntry::make('position.name')
@@ -28,7 +28,13 @@ class EmployeeInfolist
                     ->url(fn ($record) => $record->department ? route('filament.admin.resources.departments.view', $record->department) : null),
                 TextEntry::make('contract_type'),
                 TextEntry::make('status'),
+                TextEntry::make('salary')
+                    ->state(fn ($record) => number_format($record->salary, 2)),
                 TextEntry::make('joining_date')->date(),
+                TextEntry::make('work_start')
+                    ->state(fn ($record) => date('h:i A', strtotime($record->work_start))),
+                TextEntry::make('work_end')
+                    ->state(fn ($record) => date('h:i A', strtotime($record->work_end))),
                 Section::make('Documents')
                     ->columnSpanFull()
                     ->schema([

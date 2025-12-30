@@ -2,6 +2,7 @@
 
 namespace Modules\Employees\Models;
 
+use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Modules\Departments\Models\Department;
@@ -25,9 +26,13 @@ class Employee extends Model
         'joining_date',
         'contract_type',
         'status',
+        'salary',
         'documents',
+        'work_start',
+        'work_end',
         'position_id',
         'department_id',
+        'user_id',
     ];
 
     /**
@@ -59,6 +64,14 @@ class Employee extends Model
     public function department()
     {
         return $this->belongsTo(Department::class);
+    }
+
+    /**
+     * Get the user that owns the employee.
+     */
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
     // protected static function newFactory(): EmployeeFactory
     // {

@@ -15,14 +15,17 @@ return new class extends Migration
             $table->id();
             $table->json('name');
             $table->string('phone');
-            $table->string('email')->unique();
             $table->string('emergency_contact')->nullable();
             $table->date('joining_date');
             $table->string('contract_type');
             $table->string('status');
+            $table->decimal('salary', 15, 2);
             $table->string('documents')->nullable();
+            $table->time('work_start')->nullable();
+            $table->time('work_end')->nullable();
             $table->foreignId('position_id')->constrained('positions')->onDelete('cascade');
             $table->foreignId('department_id')->constrained('departments')->onDelete('cascade');
+            $table->foreignId('user_id')->nullable()->constrained('users')->onDelete('cascade');
             $table->timestamps();
         });
     }

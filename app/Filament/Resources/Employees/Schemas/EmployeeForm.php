@@ -29,10 +29,15 @@ class EmployeeForm
                     ->required()
                     ->rules([
                         fn ($record) => [
-                            Rule::unique('employees', 'email')->ignore($record?->id),
-                            'email',
+                            Rule::unique('users', 'email')->ignore($record?->id),
                         ],
                     ]),
+                TextInput::make('password')
+                    ->label('Password')
+                    ->password()
+                    ->dehydrated(fn ($state) => filled($state))
+                    ->required(fn (string $context): bool => $context === 'create')
+                    ->minLength(6),
                 TextInput::make('phone')
                     ->required()
                     ->rules([
@@ -48,7 +53,6 @@ class EmployeeForm
                     ->options([
                         'Full Time' => 'Full Time',
                         'Part Time' => 'Part Time',
-                        'Contract' => 'Contract',
                         'Intern' => 'Intern',
                     ])
                     ->required(),
@@ -60,6 +64,18 @@ class EmployeeForm
                         'On Leave' => 'On Leave',
                     ])
                     ->required(),
+                TextInput::make('salary')
+                    ->numeric()
+                    ->required()
+                    ->minValue(0),
+                TextInput::make('work_start')
+                    ->label('Custom Work Start Time')
+                    ->type('time')
+                    ->nullable(),
+                TextInput::make('work_end')
+                    ->label('Custom Work End Time')
+                    ->type('time')
+                    ->nullable(),
                 Select::make('position_id')
                     ->relationship('position', 'name')
                     ->required()

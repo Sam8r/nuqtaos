@@ -55,4 +55,13 @@ class EmployeeResource extends Resource
             'edit' => EditEmployee::route('/{record}/edit'),
         ];
     }
+
+    protected function afterCreate($employee, array $data)
+    {
+        $employee->user()->create([
+            'name' => $data['name_en'],
+            'email' => $data['email'],
+            'password' => bcrypt($data['password']),
+        ]);
+    }
 }

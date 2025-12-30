@@ -22,7 +22,7 @@ class EmployeesTable
                 TextColumn::make('name')
                     ->label('Name')
                     ->searchable(),
-                TextColumn::make('email')
+                TextColumn::make('user.email')
                     ->searchable(),
                 TextColumn::make('phone'),
                 TextColumn::make('position.name')
@@ -41,7 +41,6 @@ class EmployeesTable
                 SelectFilter::make('contract_type')->options([
                     'full_time' => 'Full Time',
                     'part_time' => 'Part Time',
-                    'Contract' => 'Contract',
                     'intern' => 'Intern',
                 ]),
                 SelectFilter::make('department')->relationship('department', 'name'),
