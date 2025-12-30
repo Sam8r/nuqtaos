@@ -7,5 +7,6 @@
     "Departments": true,
     "Positions": true,
     "Employees": true,
-    "Settings": true
+    "Settings": true,
+    "Attendances": true
 }
