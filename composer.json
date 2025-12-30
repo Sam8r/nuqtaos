@@ -9,6 +9,7 @@
         "php": "^8.2",
         "bezhansalleh/filament-language-switch": "^4.0",
         "bezhansalleh/filament-shield": "^4.0",
+        "dotswan/filament-map-picker": "^2.1",
         "filament/filament": "^4.3",
         "hugomyb/filament-media-action": "^4.1",
         "laravel/framework": "^12.0",
