@@ -3,6 +3,7 @@
 namespace Modules\Settings\Database\Seeders;
 
 use Illuminate\Database\Seeder;
+use Modules\Settings\Models\Setting;
 
 class SettingsDatabaseSeeder extends Seeder
 {
@@ -11,6 +12,6 @@ class SettingsDatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // $this->call([]);
+        Setting::create();
     }
 }

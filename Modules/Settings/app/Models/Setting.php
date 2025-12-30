@@ -23,6 +23,26 @@ class Setting extends Model
         'currency',
         'tax',
         'default_printable_language',
+        'break_minutes',
+        'overtime_minutes',
+        'days_off_limit',
+        'encashment_limit',
+        'working_days_per_month',
+        'overtime_active_mode',
+        'overtime_percentage',
+        'overtime_fixed_rate',
+        'default_work_from',
+        'default_work_to',
+        'grace_period_minutes',
+        'work_type_days',
+        'company_latitude',
+        'company_longitude',
+        'radius_meter',
+        'default_leave_type',
+    ];
+
+    protected $casts = [
+        'work_type_days' => 'array',
     ];
 
     // protected static function newFactory(): SettingFactory
