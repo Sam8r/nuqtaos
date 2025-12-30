@@ -3,6 +3,8 @@
 namespace Modules\Positions\Database\Seeders;
 
 use Illuminate\Database\Seeder;
+use Modules\Departments\Models\Department;
+use Modules\Positions\Models\Position;
 
 class PositionsDatabaseSeeder extends Seeder
 {
@@ -11,6 +13,16 @@ class PositionsDatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // $this->call([]);
+        $department = Department::first();
+
+        Position::firstOrCreate(
+            [
+                'name' => [
+                    'en' => 'Manager',
+                    'ar' => 'مدير',
+                ],
+                'department_id' => $department->id,
+            ]
+        );
     }
 }

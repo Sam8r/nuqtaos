@@ -33,6 +33,7 @@ class EmployeesDatabaseSeeder extends Seeder
                 'joining_date' => now(),
                 'contract_type' => 'Full Time',
                 'status' => 'Active',
+                'salary' => 12000.00,
                 'work_start' => '09:00',
                 'work_end' => '17:00',
                 'position_id' => $position->id,

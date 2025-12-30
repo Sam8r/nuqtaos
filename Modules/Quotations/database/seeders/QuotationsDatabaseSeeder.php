@@ -27,6 +27,7 @@ class QuotationsDatabaseSeeder extends Seeder
                 'issue_date' => Carbon::now()->toDateString(),
                 'valid_until' => Carbon::now()->addDays(30)->toDateString(),
                 'status' => 'Draft',
+                'currency' => 'USD',
                 'terms_and_conditions' => null,
                 'subtotal' => $product->price,
                 'discount_total' => 0,
@@ -44,7 +45,7 @@ class QuotationsDatabaseSeeder extends Seeder
             [
                 'quantity' => 1,
                 'unit_price' => $product->price,
-                'discount_fixed' => 0,
+                'discount_value' => 0,
                 'discount_percent' => 0,
                 'total_price' => $product->price,
             ]

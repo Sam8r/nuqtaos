@@ -20,6 +20,7 @@ class ClientsDatabaseSeeder extends Seeder
                 'tier' => 'Gold',
                 'country' => 'Egypt',
                 'credit_limit' => 0,
+                'currency' => 'USD',
             ]
         );
     }
