@@ -64,4 +64,20 @@ class EmployeeResource extends Resource
             'password' => bcrypt($data['password']),
         ]);
     }
+
+    protected function afterSave($employee, array $data)
+    {
+        if ($employee->user) {
+            $updateData = [
+                'name' => $data['name_en'],
+                'email' => $data['email'],
+            ];
+
+            if (!empty($data['password'])) {
+                $updateData['password'] = bcrypt($data['password']);
+            }
+
+            $employee->user->update($updateData);
+        }
+    }
 }
