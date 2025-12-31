@@ -8,5 +8,6 @@
     "Positions": true,
     "Employees": true,
     "Settings": true,
-    "Attendances": true
+    "Attendances": true,
+    "Leaves": true
 }

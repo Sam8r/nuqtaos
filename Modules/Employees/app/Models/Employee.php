@@ -6,7 +6,9 @@ use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Modules\Departments\Models\Department;
+use Modules\Leaves\Models\LeaveBalance;
 use Modules\Positions\Models\Position;
+use Modules\Settings\Models\Setting;
 use Spatie\Translatable\HasTranslations;
 
 // use Modules\Employees\Database\Factories\EmployeeFactory;
@@ -50,6 +52,21 @@ class Employee extends Model
         'documents' => 'array',
     ];
 
+    protected static function booted()
+    {
+        static::created(function ($employee) {
+            $monthlyBalance = (int) Setting::value('monthly_leave_balance');
+            $accumulatedBalance = (int) Setting::value('accumulated_balance');
+
+            $employee->leaveBalances()->create([
+                'current_balance' => $monthlyBalance,
+                'accumulated_balance' => $accumulatedBalance,
+                'month' => now()->month,
+                'year' => now()->year,
+            ]);
+        });
+    }
+
     /**
      * Get the position that owns the employee.
      */
@@ -73,6 +90,15 @@ class Employee extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    /**
+     * Get the leave balances for the employee.
+     */
+    public function leaveBalances()
+    {
+        return $this->hasMany(LeaveBalance::class);
+    }
+
     // protected static function newFactory(): EmployeeFactory
     // {
     //     // return EmployeeFactory::new();
