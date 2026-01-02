@@ -92,6 +92,12 @@ class Settings extends Page implements HasForms
                 ->searchable()
                 ->nullable(),
 
+            Select::make('salary_currency')
+                ->label('Salary Currency')
+                ->options($currencies)
+                ->searchable()
+                ->nullable(),
+
             TextInput::make('tax')
                 ->label('Tax %')
                 ->numeric()

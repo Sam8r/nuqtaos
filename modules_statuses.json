@@ -9,5 +9,6 @@
     "Employees": true,
     "Settings": true,
     "Attendances": true,
-    "Leaves": true
+    "Leaves": true,
+    "FinancialAdjustments": true
 }

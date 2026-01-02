@@ -1,0 +1,11 @@
+{
+    "name": "FinancialAdjustments",
+    "alias": "financialadjustments",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\FinancialAdjustments\\Providers\\FinancialAdjustmentsServiceProvider"
+    ],
+    "files": []
+}

@@ -21,6 +21,7 @@ class Setting extends Model
         'address',
         'tax_number',
         'currency',
+        'salary_currency',
         'tax',
         'default_printable_language',
         'break_minutes',

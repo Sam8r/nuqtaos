@@ -20,6 +20,7 @@ return new class extends Migration
             $table->text('address')->nullable();
             $table->string('tax_number')->nullable();
             $table->string('currency')->default('USD');
+            $table->string('salary_currency')->default('USD');
             $table->decimal('tax', 5, 2)->nullable();
             $table->string('default_printable_language')->nullable();
             $table->unsignedTinyInteger('break_minutes')->default(0);
