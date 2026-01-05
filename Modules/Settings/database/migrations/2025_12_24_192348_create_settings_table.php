@@ -27,7 +27,8 @@ return new class extends Migration
             $table->unsignedTinyInteger('overtime_minutes')->default(30);
             $table->unsignedTinyInteger('days_off_limit')->default(5);
             $table->integer('encashment_limit')->default(2);
-            $table->unsignedTinyInteger('working_days_per_month')->default(20);
+            $table->unsignedTinyInteger('default_payroll_start_day')->default(1);
+            $table->json('weekends')->nullable();
             $table->string('overtime_active_mode')->default('percentage');
             $table->decimal('overtime_percentage', 8, 2)->default(1.5);
             $table->decimal('overtime_fixed_rate', 10, 2)->default(0);

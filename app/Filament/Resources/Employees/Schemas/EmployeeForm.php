@@ -49,6 +49,11 @@ class EmployeeForm
                 Textarea::make('emergency_contact'),
                 DatePicker::make('joining_date')
                     ->required(),
+                TextInput::make('payroll_start_day')
+                    ->label('Payroll Cycle Start Day')
+                    ->numeric()
+                    ->minValue(1)
+                    ->maxValue(31),
                 Select::make('contract_type')
                     ->options([
                         'Full Time' => 'Full Time',

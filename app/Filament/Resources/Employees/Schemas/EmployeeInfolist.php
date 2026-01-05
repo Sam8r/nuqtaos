@@ -31,6 +31,7 @@ class EmployeeInfolist
                 TextEntry::make('salary')
                     ->state(fn ($record) => number_format($record->salary, 2)),
                 TextEntry::make('joining_date')->date(),
+                TextEntry::make('payroll_start_day')->date(),
                 TextEntry::make('work_start')
                     ->state(fn ($record) => date('h:i A', strtotime($record->work_start))),
                 TextEntry::make('work_end')

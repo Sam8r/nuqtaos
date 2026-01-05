@@ -142,12 +142,20 @@ class Settings extends Page implements HasForms
                 ->default(2)
                 ->nullable(),
 
-            TextInput::make('working_days_per_month')
-                ->label('Working Days Per Month')
-                ->numeric()
-                ->minValue(0)
-                ->default(20)
-                ->nullable(),
+            Select::make('weekends')
+                ->multiple()
+                ->options([
+                    'Saturday' => 'Saturday',
+                    'Sunday' => 'Sunday',
+                    'Monday' => 'Monday',
+                    'Tuesday' => 'Tuesday',
+                    'Wednesday' => 'Wednesday',
+                    'Thursday' => 'Thursday',
+                    'Friday' => 'Friday',
+                ]),
+
+            TextInput::make('default_payroll_start_day')
+                ->numeric(),
 
             Select::make('overtime_type')
                 ->label('Overtime Type')

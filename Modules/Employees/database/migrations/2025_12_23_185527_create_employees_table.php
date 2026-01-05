@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('phone');
             $table->string('emergency_contact')->nullable();
             $table->date('joining_date');
+            $table->date('payroll_start_day')->nullable();
             $table->string('contract_type');
             $table->string('status');
             $table->decimal('salary', 15, 2);

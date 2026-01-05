@@ -26,6 +26,7 @@ class Employee extends Model
         'email',
         'emergency_contact',
         'joining_date',
+        'payroll_start_day',
         'contract_type',
         'status',
         'salary',
