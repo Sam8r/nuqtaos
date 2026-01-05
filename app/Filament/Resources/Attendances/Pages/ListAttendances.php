@@ -130,7 +130,7 @@ class ListAttendances extends ListRecords
 
                         $attendance->update([
                             'check_out' => $checkOut,
-                            'working_minutes' => $workedMinutes,
+//                            'working_minutes' => $workedMinutes,
                             'total_working_hours' => round($workedMinutes / 60, 2),
                             'break_duration' => $settings->break_minutes,
                             'overtime_hours' => $overtimeHours,
