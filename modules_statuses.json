@@ -10,5 +10,6 @@
     "Settings": true,
     "Attendances": true,
     "Leaves": true,
-    "FinancialAdjustments": true
+    "FinancialAdjustments": true,
+    "Payrolls": true
 }

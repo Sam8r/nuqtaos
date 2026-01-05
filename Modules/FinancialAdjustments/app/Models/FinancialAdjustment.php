@@ -4,6 +4,8 @@ namespace Modules\FinancialAdjustments\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Modules\Employees\Models\Employee;
+
 // use Modules\FinancialAdjustments\Database\Factories\FinancialAdjustmentFactory;
 
 class FinancialAdjustment extends Model
@@ -23,6 +25,11 @@ class FinancialAdjustment extends Model
         'processing_date',
         'employee_id',
     ];
+
+    public function employee()
+    {
+        return $this->belongsTo(Employee::class);
+    }
 
     // protected static function newFactory(): FinancialAdjustmentFactory
     // {
