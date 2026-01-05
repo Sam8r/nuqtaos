@@ -3,9 +3,11 @@
 namespace App\Filament\Resources\FinancialAdjustments\Schemas;
 
 use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
+use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
 
 class FinancialAdjustmentForm
@@ -22,7 +24,7 @@ class FinancialAdjustmentForm
 
                 Select::make('type')
                     ->required()
-                    ->reactive()
+                    ->live()
                     ->options([
                         'Bonus' => 'Bonus',
                         'Deduction' => 'Deduction',
@@ -31,7 +33,7 @@ class FinancialAdjustmentForm
                 Select::make('category')
                     ->required()
                     ->options(fn ($get) =>
-                    $get('type') === 'bonus'
+                    $get('type') === 'Bonus'
                         ? [
                         'Performance-based' => 'Performance-based',
                         'Attendance-based'  => 'Attendance-based',
@@ -48,18 +50,28 @@ class FinancialAdjustmentForm
                 TextInput::make('amount')
                     ->numeric()
                     ->minValue(0)
-                    ->helperText('Leave empty if calculated by days'),
+                    ->label('Amount (Cash)')
+                    ->live(debounce: 300)
+                    ->required(fn (Get $get) => empty($get('days_count')))
+                    ->disabled(fn (Get $get) => !empty($get('days_count'))),
 
                 TextInput::make('days_count')
                     ->numeric()
                     ->minValue(1)
-                    ->visible(fn ($get) => $get('type') === 'Deduction'),
+                    ->label('Days Count')
+                    ->live(debounce: 300)
+                    ->visible(fn (Get $get) => $get('type') === 'Deduction')
+                    ->required(fn (Get $get) => $get('type') === 'Deduction' && empty($get('amount')))
+                    ->disabled(fn (Get $get) => !empty($get('amount'))),
 
                 Textarea::make('reason')
                     ->required(),
 
                 DatePicker::make('processing_date')
                     ->required(),
+
+                Hidden::make('status')
+                    ->default('Pending'),
             ]);
     }
 }
