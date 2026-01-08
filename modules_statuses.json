@@ -12,5 +12,6 @@
     "Leaves": true,
     "FinancialAdjustments": true,
     "Payrolls": true,
-    "Expenses": true
+    "Expenses": true,
+    "Projects": true
 }
