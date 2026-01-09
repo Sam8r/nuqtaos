@@ -13,5 +13,6 @@
     "FinancialAdjustments": true,
     "Payrolls": true,
     "Expenses": true,
-    "Projects": true
+    "Projects": true,
+    "Tasks": true
 }
