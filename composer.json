@@ -19,6 +19,7 @@
         "parfaitementweb/filament-country-field": "^2.5",
         "picqer/php-barcode-generator": "^3.2",
         "pxlrbt/filament-activity-log": "^2.0",
+        "relaticle/flowforge": "^2.2",
         "spatie/laravel-activitylog": "^4.10",
         "spatie/laravel-translatable": "^6.12",
         "umpirsky/country-list": "^2.0",
