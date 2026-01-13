@@ -72,28 +72,46 @@ class PayrollForm
     private static function calculatePayroll(Get $get, Set $set): void
     {
         $employeeId = $get('employee_id');
-        $monthYear = $get('month_year');
+        $monthYear  = $get('month_year');
 
-        if (!$employeeId || !$monthYear) return;
+        if (!$employeeId || !$monthYear) {
+            return;
+        }
 
         $employee = Employee::find($employeeId);
         $settings = Setting::first();
 
-        // 1. تحديد نطاق دورة الرواتب (مثلاً من 7 يناير لـ 6 فبراير)
-        $startDay = $employee->payroll_start_day ?? $settings->default_payroll_start_day ?? 1;
+        /*
+        |--------------------------------------------------------------------------
+        | 1. Payroll Cycle Dates
+        |--------------------------------------------------------------------------
+        */
+        $startDay = $employee->payroll_start_day
+            ?? $settings->default_payroll_start_day
+            ?? 1;
+
         $cycleStartDate = Carbon::parse($monthYear)->day($startDay);
-        $cycleEndDate = $cycleStartDate->copy()->addMonth()->subDay();
+        $cycleEndDate   = $cycleStartDate->copy()->addMonth()->subDay();
 
-        // 2. معالجة تاريخ التعيين (Override)
-        // لو تعين في نص الدورة، نبدأ الحساب من تاريخ التعيين لضمان عدم الخصم بأثر رجعي
-        $hiringDate = Carbon::parse($employee->hiring_date);
-        $actualStartDate = $hiringDate->gt($cycleStartDate) ? $hiringDate : $cycleStartDate;
+        /*
+        |--------------------------------------------------------------------------
+        | 2. Hiring Date Override
+        |--------------------------------------------------------------------------
+        */
+        $joiningDate     = Carbon::parse($employee->joining_date);
+        $actualStartDate = $joiningDate->gt($cycleStartDate)
+            ? $joiningDate
+            : $cycleStartDate;
 
-        // 3. حساب أيام العمل المطلوبة (Target) باستبعاد الويكند
-        $weekends = $settings->weekends ?? ['Friday', 'Saturday'];
+        /*
+        |--------------------------------------------------------------------------
+        | 3. Working Days Target (Exclude Weekends)
+        |--------------------------------------------------------------------------
+        */
+        $weekends = $settings->weekends ?? [];
         $workingDaysRequired = 0;
-        $tempDate = $actualStartDate->copy();
 
+        $tempDate = $actualStartDate->copy();
         while ($tempDate->lte($cycleEndDate)) {
             if (!in_array($tempDate->format('l'), $weekends)) {
                 $workingDaysRequired++;
@@ -101,39 +119,81 @@ class PayrollForm
             $tempDate->addDay();
         }
 
-        // 4. الحسابات المالية الأساسية (نظام الـ 30 يوم)
-        $salary = $employee->salary;
-        $dailySalary = $salary / 30; // العرف الثابت
+        /*
+        |--------------------------------------------------------------------------
+        | 4. Salary & Daily Rate
+        |--------------------------------------------------------------------------
+        */
+        $salary      = $employee->salary;
+        $dailySalary = $salary / 30;
 
-        // 5. تحليل الحضور الفعلي من البصمة
+        /*
+        |--------------------------------------------------------------------------
+        | 5. Work Hours (Employee Override → Settings)
+        |--------------------------------------------------------------------------
+        */
+        $workFrom = $employee->work_start
+            ? Carbon::parse($employee->work_start)
+            : Carbon::parse($settings->default_work_from);
+
+        $workTo = $employee->work_end
+            ? Carbon::parse($employee->work_end)
+            : Carbon::parse($settings->default_work_to);
+
+        $dailyWorkingHours = max(
+            0,
+            $workFrom->diffInMinutes($workTo) / 60
+        );
+
+        $hourlyRate = $dailyWorkingHours > 0
+            ? $dailySalary / $dailyWorkingHours
+            : 0;
+
+        /*
+        |--------------------------------------------------------------------------
+        | 6. Attendance & Absence
+        |--------------------------------------------------------------------------
+        */
         $attendances = Attendance::where('employee_id', $employeeId)
-            ->whereBetween('date', [$actualStartDate->toDateString(), $cycleEndDate->toDateString()])
+            ->whereBetween('date', [
+                $actualStartDate->toDateString(),
+                $cycleEndDate->toDateString(),
+            ])
             ->get();
 
         $actualAttendanceDays = $attendances->count();
-        $totalOvertimeHours = $attendances->sum('overtime_hours');
+        $totalOvertimeHours  = $attendances->sum('overtime_hours');
 
-        // 6. حساب الغياب (أي يوم عمل بدون بصمة = خصم)
         $absenceDays = max(0, $workingDaysRequired - $actualAttendanceDays);
-        $totalAbsenceDeduction = $absenceDays * $dailySalary;
+        $absenceDeduction = $absenceDays * $dailySalary;
 
-        // 7. حساب الأوفرتايم (بناءً على الساعات الفعلية)
-        $overtimeMultiplier = $settings->overtime_percentage ?? 1.5;
-        $hourlyRate = $dailySalary / 8; // بافتراض 8 ساعات عمل
-        $overtimePay = $totalOvertimeHours * $hourlyRate * $overtimeMultiplier;
+        /*
+        |--------------------------------------------------------------------------
+        | 7. Overtime Calculation
+        |--------------------------------------------------------------------------
+        */
+        if ($settings->overtime_active_mode === 'fixed') {
+            $overtimePay = $totalOvertimeHours * $settings->overtime_fixed_rate;
+        } else {
+            $multiplier  = $settings->overtime_percentage ?? 1.5;
+            $overtimePay = $totalOvertimeHours * $hourlyRate * $multiplier;
+        }
 
-        // 8. تجميع التسويات والمكافآت (Adjustments)
-        $actions = $get('adjustments_actions') ?? [];
-        $adjBonuses = 0;
-        $adjDeductions = 0;
-        // ... (منطق التسويات يظل كما هو في كودك)
+        /*
+        |--------------------------------------------------------------------------
+        | 8. Totals
+        |--------------------------------------------------------------------------
+        */
+        $totalBonuses    = $overtimePay;
+        $totalDeductions = $absenceDeduction;
 
-        // 9. النتائج النهائية
-        $totalBonuses = $overtimePay + $adjBonuses;
-        $totalDeductions = $totalAbsenceDeduction + $adjDeductions;
         $netSalary = $salary + $totalBonuses - $totalDeductions;
 
-        // 10. تحديث الواجهة
+        /*
+        |--------------------------------------------------------------------------
+        | 9. Set Form Values
+        |--------------------------------------------------------------------------
+        */
         $set('basic_salary', round($salary, 2));
         $set('daily_rate', round($dailySalary, 2));
         $set('working_days_target', $workingDaysRequired);
