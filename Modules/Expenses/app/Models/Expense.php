@@ -19,9 +19,15 @@ class Expense extends Model
         'description',
         'expense_date',
         'status',
+        'documents',
         'submitted_by',
         'approved_by',
         'expense_category_id',
+    ];
+
+    protected $casts = [
+        'documents' => 'array',
+        'expense_date' => 'date',
     ];
 
     public function category()

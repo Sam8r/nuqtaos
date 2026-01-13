@@ -18,6 +18,7 @@ return new class extends Migration
             $table->date('expense_date');
             $table->foreignId('submitted_by')->constrained('users');
             $table->string('status')->default('Pending');
+            $table->string('documents')->nullable();
             $table->foreignId('approved_by')->nullable()->constrained('users');
             $table->foreignId('expense_category_id')->constrained('expense_categories')->onDelete('cascade');
             $table->timestamps();
