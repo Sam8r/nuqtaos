@@ -28,6 +28,7 @@ class Employee extends Model
         'joining_date',
         'payroll_start_day',
         'contract_type',
+        'work_type',
         'status',
         'salary',
         'documents',

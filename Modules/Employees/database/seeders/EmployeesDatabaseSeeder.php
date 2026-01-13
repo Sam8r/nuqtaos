@@ -32,6 +32,7 @@ class EmployeesDatabaseSeeder extends Seeder
                 'emergency_contact' => '+201234567890',
                 'joining_date' => now(),
                 'contract_type' => 'Full Time',
+                'work_type' => 'Onsite',
                 'status' => 'Active',
                 'salary' => 12000.00,
                 'work_start' => '09:00',

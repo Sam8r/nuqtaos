@@ -83,26 +83,35 @@ class ListAttendances extends ListRecords
                     $userLat = $arguments['lat'] ?? null;
                     $userLon = $arguments['lng'] ?? null;
 
-                    if (!$userLat || !$userLon) {
-                        Notification::make()->title('GPS Error')->body('Unable to retrieve location.')->danger()->send();
-                        return;
-                    }
+                    if ($employee->work_type === 'Onsite') {
 
-                    // Validation based on dynamic coordinates and radius
-                    $distance = $this->calculateDistance(
-                        $settings->company_latitude,
-                        $settings->company_longitude,
-                        $userLat,
-                        $userLon
-                    );
+                        $userLat = $arguments['lat'] ?? null;
+                        $userLon = $arguments['lng'] ?? null;
 
-                    if ($distance > $settings->radius_meter) {
-                        Notification::make()
-                            ->title('Out of Range')
-                            ->body("Distance: " . round($distance) . "m. Allowed: " . $settings->radius_meter . "m.")
-                            ->danger()
-                            ->send();
-                        return;
+                        if (!$userLat || !$userLon) {
+                            Notification::make()
+                                ->title('GPS Error')
+                                ->body('Unable to retrieve location.')
+                                ->danger()
+                                ->send();
+                            return;
+                        }
+
+                        $distance = $this->calculateDistance(
+                            $settings->company_latitude,
+                            $settings->company_longitude,
+                            $userLat,
+                            $userLon
+                        );
+
+                        if ($distance > $settings->radius_meter) {
+                            Notification::make()
+                                ->title('Out of Range')
+                                ->body("Distance: " . round($distance) . "m. Allowed: " . $settings->radius_meter . "m.")
+                                ->danger()
+                                ->send();
+                            return;
+                        }
                     }
 
                     $attendance = Attendance::firstOrCreate([

@@ -61,6 +61,12 @@ class EmployeeForm
                         'Intern' => 'Intern',
                     ])
                     ->required(),
+                Select::make('work_type')
+                    ->options([
+                        'Onsite' => 'Onsite',
+                        'Remote' => 'Remote',
+                    ])
+                    ->required(),
                 Select::make('status')
                     ->options([
                         'Active' => 'Active',

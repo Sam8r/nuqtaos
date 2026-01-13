@@ -19,6 +19,7 @@ return new class extends Migration
             $table->date('joining_date');
             $table->date('payroll_start_day')->nullable();
             $table->string('contract_type');
+            $table->string('work_type');
             $table->string('status');
             $table->decimal('salary', 15, 2);
             $table->string('documents')->nullable();

@@ -27,6 +27,7 @@ class EmployeeInfolist
                     ->label('Department')
                     ->url(fn ($record) => $record->department ? route('filament.admin.resources.departments.view', $record->department) : null),
                 TextEntry::make('contract_type'),
+                TextEntry::make('work_type'),
                 TextEntry::make('status'),
                 TextEntry::make('salary')
                     ->state(fn ($record) => number_format($record->salary, 2)),
