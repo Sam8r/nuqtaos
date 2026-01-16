@@ -11,11 +11,18 @@ class EditFinancialAdjustment extends EditRecord
 {
     protected static string $resource = FinancialAdjustmentResource::class;
 
+    public function getTitle(): string
+    {
+        return __('financial_adjustments.page.edit');
+    }
+
     protected function getHeaderActions(): array
     {
         return [
-            ViewAction::make(),
-            DeleteAction::make(),
+            ViewAction::make()
+                ->label(__('financial_adjustments.actions.view')),
+            DeleteAction::make()
+                ->label(__('financial_adjustments.actions.delete')),
         ];
     }
 }

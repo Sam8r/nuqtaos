@@ -19,11 +19,14 @@ class PositionsTable
         return $table
             ->columns([
                 TextColumn::make('name')
-                    ->label('Name'),
-                TextColumn::make('department.name')->label('Department'),
+                    ->label(__('positions.fields.name')),
+                TextColumn::make('department.name')
+                    ->label(__('positions.fields.department'))
+                    ->formatStateUsing(fn ($state) => $state ?? __('positions.messages.no_department')),
             ])
             ->filters([
-                TrashedFilter::make(),
+                TrashedFilter::make()
+                    ->label(__('positions.filters.trashed')),
             ])
             ->recordActions([
                 ViewAction::make(),

@@ -18,11 +18,15 @@ class DepartmentsTable
     {
         return $table
             ->columns([
-                TextColumn::make('name'),
-                TextColumn::make('parent.name')->label('Parent Department'),
+                TextColumn::make('name')
+                    ->label(__('departments.fields.name')),
+                TextColumn::make('parent.name')
+                    ->label(__('departments.fields.parent'))
+                    ->formatStateUsing(fn ($state) => $state ?? __('departments.messages.no_parent')),
             ])
             ->filters([
-                TrashedFilter::make(),
+                TrashedFilter::make()
+                    ->label(__('departments.filters.trashed')),
             ])
             ->recordActions([
                 ViewAction::make(),

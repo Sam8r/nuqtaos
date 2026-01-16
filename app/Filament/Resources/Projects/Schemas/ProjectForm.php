@@ -21,49 +21,51 @@ class ProjectForm
         return $schema
             ->components([
                 TextInput::make('name')
-                    ->label('Project Name')
+                    ->label(__('projects.fields.name'))
                     ->required()
                     ->maxLength(255),
 
                 Select::make('client_id')
-                    ->label('Client')
+                    ->label(__('projects.fields.client'))
                     ->relationship('client', 'company_name')
                     ->searchable()
                     ->preload()
                     ->required(),
 
                 Select::make('team_leader_id')
-                    ->label('Project Manager')
+                    ->label(__('projects.fields.team_leader'))
                     ->relationship('teamLeader', 'name')
                     ->searchable()
                     ->preload(),
 
                 Select::make('status')
+                    ->label(__('projects.fields.status'))
                     ->options([
-                        'Active' => 'Active',
-                        'Completed' => 'Completed',
-                        'On Hold' => 'On Hold',
+                        'Active' => __('projects.statuses.Active'),
+                        'Completed' => __('projects.statuses.Completed'),
+                        'On Hold' => __('projects.statuses.On Hold'),
                     ])
                     ->default('Active')
                     ->required(),
 
                 DatePicker::make('start_date')
-                    ->label('Start Date'),
+                    ->label(__('projects.fields.start_date')),
 
                 DatePicker::make('end_date')
-                    ->label('End Date'),
+                    ->label(__('projects.fields.end_date')),
 
                 TextInput::make('budget')
+                    ->label(__('projects.fields.budget'))
                     ->numeric()
                     ->prefix($currency),
 
                 Slider::make('progress_percentage')
-                    ->label('Progress (%)')
+                    ->label(__('projects.fields.progress_percentage'))
                     ->step(5)
                     ->default(0),
 
                 Textarea::make('description')
-                    ->label('Description')
+                    ->label(__('projects.fields.description'))
                     ->rows(3),
             ]);
     }

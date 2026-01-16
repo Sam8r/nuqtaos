@@ -27,6 +27,21 @@ class InvoiceResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'number';
 
+    public static function getNavigationLabel(): string
+    {
+        return __('invoices.navigation_label');
+    }
+
+    public static function getModelLabel(): string
+    {
+        return __('invoices.model_label');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('invoices.plural_model_label');
+    }
+
     public static function form(Schema $schema): Schema
     {
         return InvoiceForm::configure($schema);

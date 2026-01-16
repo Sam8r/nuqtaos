@@ -23,57 +23,60 @@ class ProductsTable
         return $table
             ->columns([
                 TextColumn::make('code')
-                    ->label('Code')
+                    ->label(__('products.fields.code'))
                     ->searchable(),
                 TextColumn::make('name')
-                    ->label('Name')
+                    ->label(__('products.fields.name'))
                     ->searchable(),
                 TextColumn::make('price')
-                    ->label('Price')
+                    ->label(__('products.fields.price'))
                     ->sortable()
                     ->money(fn ($record) => $record->currency),
                 ImageColumn::make('first_image')
-                    ->label('Image')
+                    ->label(__('products.labels.image'))
                     ->getStateUsing(function ($record) {
                         return isset($record->images[0]) ? asset('storage/' . $record->images[0]) : null;
                     })
                     ->size(50)
                     ->rounded(),
                 BadgeColumn::make('type')
-                    ->label('Type')
+                    ->label(__('products.fields.type'))
                     ->colors([
                         'primary' => 'Service',
                         'success' => 'Physical',
-                    ]),
+                    ])
+                    ->formatStateUsing(fn ($state) => __('products.types.' . $state)),
                 TextColumn::make('sku')
-                    ->label('SKU')
+                    ->label(__('products.fields.sku'))
                     ->searchable(),
                 BadgeColumn::make('status')
-                    ->label('Status')
+                    ->label(__('products.fields.status'))
                     ->colors([
                         'success' => 'Active',
                         'warning' => 'Inactive',
                         'danger' => 'Discontinued',
-                    ]),
+                    ])
+                    ->formatStateUsing(fn ($state) => __('products.statuses.' . $state)),
                 TextColumn::make('category.name')
-                    ->label('Category')
+                    ->label(__('products.fields.category'))
                     ->searchable(),
             ])
             ->filters([
                 SelectFilter::make('status')
-                    ->label('Status')
+                    ->label(__('products.filters.status'))
                     ->options([
-                        'Active' => 'Active',
-                        'Inactive' => 'Inactive',
-                        'Discontinued' => 'Discontinued',
+                        'Active' => __('products.statuses.Active'),
+                        'Inactive' => __('products.statuses.Inactive'),
+                        'Discontinued' => __('products.statuses.Discontinued'),
                     ]),
                 SelectFilter::make('type')
-                    ->label('Type')
+                    ->label(__('products.filters.type'))
                     ->options([
-                        'Service' => 'Service',
-                        'Physical' => 'Physical',
+                        'Service' => __('products.types.Service'),
+                        'Physical' => __('products.types.Physical'),
                     ]),
-                TrashedFilter::make(),
+                TrashedFilter::make()
+                    ->label(__('products.filters.trashed')),
             ])
             ->recordActions([
                 ViewAction::make(),
@@ -81,9 +84,12 @@ class ProductsTable
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
-                    DeleteBulkAction::make(),
-                    ForceDeleteBulkAction::make(),
-                    RestoreBulkAction::make(),
+                    DeleteBulkAction::make()
+                        ->label(__('products.actions.delete')),
+                    ForceDeleteBulkAction::make()
+                        ->label(__('products.actions.force_delete')),
+                    RestoreBulkAction::make()
+                        ->label(__('products.actions.restore')),
                 ]),
             ]);
     }

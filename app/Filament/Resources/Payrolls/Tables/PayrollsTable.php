@@ -18,69 +18,73 @@ class PayrollsTable
 {
     public static function configure(Table $table): Table
     {
-        $currency = Setting::value('salary_currency');
+        $currency = Setting::value('salary_currency') ?? 'USD';
 
         return $table
             ->columns([
                 TextColumn::make('employee.name')
-                    ->label('Employee')
+                    ->label(__('payrolls.fields.employee'))
                     ->searchable(),
 
                 TextColumn::make('month_year')
-                    ->label('Payroll Month')
+                    ->label(__('payrolls.fields.month_year'))
                     ->date('F Y')
                     ->sortable(),
 
                 TextColumn::make('basic_salary')
-                    ->label('Basic')
+                    ->label(__('payrolls.fields.basic_salary'))
                     ->money($currency),
 
                 TextColumn::make('bonuses_total')
-                    ->label('Bonuses')
+                    ->label(__('payrolls.fields.bonuses_total'))
                     ->money($currency)
                     ->color('success'),
 
                 TextColumn::make('leaves_deduction')
-                    ->label('Leave Deds')
+                    ->label(__('payrolls.fields.leaves_deduction'))
                     ->money($currency)
                     ->color('danger'),
 
                 TextColumn::make('deductions_total')
-                    ->label('Total Deds')
+                    ->label(__('payrolls.fields.deductions_total'))
                     ->money($currency)
                     ->color('danger'),
 
                 TextColumn::make('net_salary')
-                    ->label('Net Salary')
+                    ->label(__('payrolls.fields.net_salary'))
                     ->money($currency)
                     ->weight('bold')
                     ->color('primary'),
 
                 TextColumn::make('created_at')
-                    ->label('Generated On')
+                    ->label(__('payrolls.fields.created_at'))
                     ->dateTime(),
             ])
             ->defaultSort('month_year', 'desc')
             ->filters([
                 SelectFilter::make('employee_id')
                     ->relationship('employee', 'name')
-                    ->label('Filter by Employee'),
+                    ->label(__('payrolls.filters.employee')),
 
                 Filter::make('month_year')
                     ->form([
-                        DatePicker::make('month'),
+                        DatePicker::make('month')
+                            ->label(__('payrolls.filters.month')),
                     ])
                     ->query(fn ($query, array $data) =>
                     $query->when($data['month'], fn($q) => $q->whereMonth('month_year', Carbon::parse($data['month'])->month))
                     )
             ])
             ->recordActions([
-                ViewAction::make(),
-                EditAction::make(),
+                ViewAction::make()
+                    ->label(__('payrolls.actions.view')),
+                EditAction::make()
+                    ->label(__('payrolls.actions.edit')),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
-                    DeleteBulkAction::make(),
+                    DeleteBulkAction::make()
+                        ->label(__('payrolls.actions.delete')),
                 ]),
             ]);
     }

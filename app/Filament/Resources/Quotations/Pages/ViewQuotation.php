@@ -22,7 +22,7 @@ class ViewQuotation extends ViewRecord
     {
         return [
             Action::make('print_arabic')
-                ->label('Print (Arabic)')
+                ->label(__('quotations.actions.print_arabic'))
                 ->icon('heroicon-o-document-text')
                 ->color('gray')
                 ->action(function ($record) {
@@ -31,7 +31,7 @@ class ViewQuotation extends ViewRecord
                 }),
 
             Action::make('print_english')
-                ->label('Print (English)')
+                ->label(__('quotations.actions.print_english'))
                 ->icon('heroicon-o-document-text')
                 ->color('primary')
                 ->action(function ($record) {
@@ -40,24 +40,26 @@ class ViewQuotation extends ViewRecord
                 }),
 
             Action::make('convert_to_invoice')
-                ->label('Convert to Invoice')
+                ->label(__('quotations.actions.convert_to_invoice'))
                 ->button()
                 ->color('success')
                 ->icon('heroicon-o-receipt-percent')
-                ->modalHeading('Convert Quotation to Invoice')
+                ->modalHeading(__('quotations.prompts.convert_modal_heading'))
                 ->modalWidth('lg')
                 ->form([
                     DatePicker::make('issue_date')
+                        ->label(__('quotations.fields.issue_date'))
                         ->required()
                         ->default(now())
                         ->live(),
 
                     DatePicker::make('due_date')
+                        ->label(__('quotations.fields.due_date'))
                         ->required()
                         ->minDate(fn ($get) => $get('issue_date')),
 
                     TextInput::make('late_payment_penalty_percent')
-                        ->label('Late Payment (%)')
+                        ->label(__('quotations.fields.late_payment_penalty_percent'))
                         ->numeric()
                         ->default(0)
                         ->minValue(0)
@@ -71,14 +73,8 @@ class ViewQuotation extends ViewRecord
                         }),
 
                     Select::make('status')
-                        ->label('Status')
-                        ->options([
-                            'Draft' => 'Draft',
-                            'Pending' => 'Pending',
-                            'Partially Paid' => 'Partially Paid',
-                            'Paid' => 'Paid',
-                            'Overdue' => 'Overdue',
-                        ])
+                        ->label(__('quotations.fields.status'))
+                        ->options(__('quotations.invoice_statuses'))
                         ->default('Draft')
                         ->required(),
                 ])
@@ -111,9 +107,9 @@ class ViewQuotation extends ViewRecord
                     }
 
                     Notification::make()
-                        ->title('Success')
+                        ->title(__('quotations.notifications.success'))
                         ->success()
-                        ->body('Quotation converted to Invoice successfully!')
+                        ->body(__('quotations.notifications.converted'))
                         ->send();
                 }),
 

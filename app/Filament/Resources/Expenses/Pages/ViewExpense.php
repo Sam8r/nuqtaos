@@ -15,6 +15,7 @@ class ViewExpense extends ViewRecord
     {
         return [
             Action::make('approve')
+                ->label(__('expenses.actions.approve'))
                 ->visible(fn ($record) => $record->status === 'Pending')
                 ->color('success')
                 ->icon('heroicon-o-check')
@@ -25,6 +26,7 @@ class ViewExpense extends ViewRecord
                     ]);
                 }),
             Action::make('reject')
+                ->label(__('expenses.actions.reject'))
                 ->visible(fn ($record) => $record->status === 'Pending')
                 ->color('danger')
                 ->icon('heroicon-o-x-mark')

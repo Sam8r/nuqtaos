@@ -11,11 +11,13 @@ class ExpenseCategoryInfolist
     {
         return $schema
             ->components([
-                TextEntry::make('name'),
+                TextEntry::make('name')
+                    ->label(__('expense_categories.fields.name')),
                 TextEntry::make('parent.name')
-                    ->label('Parent Expense Category')
-                    ->url(fn ($record) => $record->parent ? route('filament.admin.resources.expense-categories.view', $record->parent) : null
-                    ),
+                    ->label(__('expense_categories.fields.parent'))
+                    ->state(fn ($record) => $record->parent?->getTranslation('name', app()->getLocale()))
+                    ->placeholder(__('expense_categories.messages.no_parent'))
+                    ->url(fn ($record) => $record->parent ? route('filament.admin.resources.expense-categories.view', $record->parent) : null),
             ]);
     }
 }

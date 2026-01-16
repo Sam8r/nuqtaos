@@ -15,42 +15,44 @@ class ProjectInfolist
         return $schema
             ->components([
                 TextEntry::make('name')
-                    ->label('Project Name')
+                    ->label(__('projects.fields.name'))
                     ->weight('bold')
                     ->size('lg'),
 
                 TextEntry::make('client.company_name')
-                    ->label('Client Name'),
+                    ->label(__('projects.fields.client_name')),
 
                 TextEntry::make('teamLeader.name')
-                    ->label('Project Manager'),
+                    ->label(__('projects.fields.team_leader')),
 
                 TextEntry::make('status')
+                    ->label(__('projects.fields.status'))
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
                         'Active' => 'success',
                         'Completed' => 'info',
                         'On Hold' => 'warning',
-                    }),
+                    })
+                    ->formatStateUsing(fn (string $state): string => __('projects.statuses.' . $state)),
 
                 TextEntry::make('start_date')
-                    ->label('Start Date')
+                    ->label(__('projects.fields.start_date'))
                     ->date(),
 
                 TextEntry::make('end_date')
-                    ->label('Deadline')
+                    ->label(__('projects.fields.deadline'))
                     ->date(),
 
                 TextEntry::make('budget')
-                    ->label('Budget')
+                    ->label(__('projects.fields.budget'))
                     ->money($currency),
 
                 TextEntry::make('progress_percentage')
-                    ->label('Completion Progress')
-                    ->formatStateUsing(fn ($state) => ($state ?? 0) . '%'),
+                    ->label(__('projects.fields.progress_percentage'))
+                    ->formatStateUsing(fn ($state) => __('projects.messages.progress_with_value', ['value' => $state ?? 0])),
 
                 TextEntry::make('description')
-                    ->label('Description'),
+                    ->label(__('projects.fields.description')),
             ]);
     }
 }

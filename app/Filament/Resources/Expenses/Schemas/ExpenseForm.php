@@ -18,22 +18,26 @@ class ExpenseForm
         return $schema
             ->components([
                 Select::make('expense_category_id')
+                    ->label(__('expenses.fields.category'))
                     ->relationship('category', 'name')
                     ->searchable()
                     ->preload()
                     ->required(),
 
                 TextInput::make('amount')
+                    ->label(__('expenses.fields.amount'))
                     ->numeric()
                     ->required(),
 
                 DatePicker::make('expense_date')
+                    ->label(__('expenses.fields.expense_date'))
                     ->required(),
 
-                Textarea::make('description'),
+                Textarea::make('description')
+                    ->label(__('expenses.fields.description')),
 
                 FileUpload::make('documents')
-                    ->label('Supporting Documents')
+                    ->label(__('expenses.fields.documents'))
                     ->multiple()
                     ->directory('expense_docs')
                     ->disk('public')
@@ -51,7 +55,7 @@ class ExpenseForm
                         $extension = $file->getClientOriginalExtension();
                         return Str::slug($originalName) . '-' . rand(1000, 9999) . '.' . $extension;
                     })
-                    ->helperText('Upload receipts, invoices, or other supporting documents. Allowed file types: jpg, jpeg, png, webp, pdf, doc, docx.')
+                    ->helperText(__('expenses.helper_texts.documents'))
                     ->columnSpanFull(),
 
                 Hidden::make('submitted_by')

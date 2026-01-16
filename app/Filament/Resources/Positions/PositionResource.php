@@ -24,7 +24,24 @@ class PositionResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedBriefcase;
 
+    protected static ?string $navigationLabel = null;
+
     protected static ?string $recordTitleAttribute = 'name';
+
+    public static function getNavigationLabel(): string
+    {
+        return __('positions.navigation_label');
+    }
+
+    public static function getModelLabel(): string
+    {
+        return __('positions.model_label');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('positions.plural_model_label');
+    }
 
     public static function form(Schema $schema): Schema
     {

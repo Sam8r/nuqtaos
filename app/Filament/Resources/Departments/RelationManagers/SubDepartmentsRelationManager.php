@@ -32,6 +32,7 @@ class SubDepartmentsRelationManager extends RelationManager
         return $schema
             ->components([
                 Textarea::make('name')
+                    ->label(__('departments.relation.name'))
                     ->required()
                     ->columnSpanFull(),
             ]);
@@ -41,30 +42,51 @@ class SubDepartmentsRelationManager extends RelationManager
     {
         return $table
             ->recordTitleAttribute('name')
+            ->heading(__('departments.relation.table.heading'))
+            ->searchPlaceholder(__('departments.relation.table.search'))
             ->columns([
                 TextColumn::make('name')
+                    ->label(__('departments.relation.name'))
                     ->searchable(),
             ])
             ->filters([
-                TrashedFilter::make(),
+                TrashedFilter::make()
+                    ->label(__('departments.filters.trashed')),
+            ])
+            ->emptyStateHeading(__('departments.relation.table.empty_heading'))
+            ->emptyStateDescription(__('departments.relation.table.empty_description'))
+            ->emptyStateActions([
+                CreateAction::make('empty-state-create')
+                    ->label(__('departments.relation.table.empty_action')),
             ])
             ->headerActions([
-                CreateAction::make(),
-                AssociateAction::make(),
+                CreateAction::make()
+                    ->label(__('departments.relation.actions.create')),
+                AssociateAction::make()
+                    ->label(__('departments.relation.actions.associate')),
             ])
             ->recordActions([
-                EditAction::make(),
-                DissociateAction::make(),
-                DeleteAction::make(),
-                ForceDeleteAction::make(),
-                RestoreAction::make(),
+                EditAction::make()
+                    ->label(__('departments.relation.actions.edit')),
+                DissociateAction::make()
+                    ->label(__('departments.relation.actions.dissociate')),
+                DeleteAction::make()
+                    ->label(__('departments.relation.actions.delete')),
+                ForceDeleteAction::make()
+                    ->label(__('departments.relation.actions.force_delete')),
+                RestoreAction::make()
+                    ->label(__('departments.relation.actions.restore')),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
-                    DissociateBulkAction::make(),
-                    DeleteBulkAction::make(),
-                    ForceDeleteBulkAction::make(),
-                    RestoreBulkAction::make(),
+                    DissociateBulkAction::make()
+                        ->label(__('departments.relation.bulk_actions.dissociate')),
+                    DeleteBulkAction::make()
+                        ->label(__('departments.relation.bulk_actions.delete')),
+                    ForceDeleteBulkAction::make()
+                        ->label(__('departments.relation.bulk_actions.force_delete')),
+                    RestoreBulkAction::make()
+                        ->label(__('departments.relation.bulk_actions.restore')),
                 ]),
             ])
             ->modifyQueryUsing(fn (Builder $query) => $query

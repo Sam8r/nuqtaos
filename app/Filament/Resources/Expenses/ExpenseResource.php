@@ -25,6 +25,27 @@ class ExpenseResource extends Resource
 
     protected static string | UnitEnum | null $navigationGroup = 'Expenses';
 
+    protected static ?string $navigationLabel = null;
+    public static function getNavigationGroup(): ?string
+    {
+        return __('expenses.navigation_group');
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return __('expenses.navigation_label');
+    }
+
+    public static function getModelLabel(): string
+    {
+        return __('expenses.model_label');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('expenses.plural_model_label');
+    }
+
     public static function form(Schema $schema): Schema
     {
         return ExpenseForm::configure($schema);

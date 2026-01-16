@@ -20,43 +20,45 @@ class ProjectsTable
         return $table
             ->columns([
                 TextColumn::make('name')
-                    ->label('Project Name')
+                    ->label(__('projects.fields.name'))
                     ->searchable(),
 
                 TextColumn::make('client.company_name')
-                    ->label('Client'),
+                    ->label(__('projects.fields.client_name')),
 
                 TextColumn::make('status')
-                    ->label('Status')
+                    ->label(__('projects.fields.status'))
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
                         'Active' => 'success',
                         'Completed' => 'info',
                         'On Hold' => 'warning',
-                    }),
+                    })
+                    ->formatStateUsing(fn (string $state): string => __('projects.statuses.' . $state)),
 
                 TextColumn::make('progress_percentage')
-                    ->label('Progress')
-                    ->formatStateUsing(fn ($state) => ($state ?? 0) . '%')
+                    ->label(__('projects.fields.progress_percentage'))
+                    ->formatStateUsing(fn ($state) => __('projects.messages.progress_with_value', ['value' => $state ?? 0]))
                     ->sortable()
                     ->alignCenter(),
 
                 TextColumn::make('budget')
-                    ->label('Budget')
+                    ->label(__('projects.fields.budget'))
                     ->money($currency)
                     ->sortable(),
 
                 TextColumn::make('end_date')
-                    ->label('Deadline')
+                    ->label(__('projects.fields.deadline'))
                     ->date()
                     ->sortable(),
             ])
             ->filters([
                 SelectFilter::make('status')
+                    ->label(__('projects.filters.status'))
                     ->options([
-                        'Active' => 'Active',
-                        'Completed' => 'Completed',
-                        'On Hold' => 'On Hold',
+                        'Active' => __('projects.statuses.Active'),
+                        'Completed' => __('projects.statuses.Completed'),
+                        'On Hold' => __('projects.statuses.On Hold'),
                     ]),
             ])
             ->recordActions([
@@ -65,7 +67,8 @@ class ProjectsTable
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
-                    DeleteBulkAction::make(),
+                    DeleteBulkAction::make()
+                        ->label(__('projects.actions.delete')),
                 ]),
             ]);
     }

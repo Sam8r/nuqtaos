@@ -14,32 +14,32 @@ class CategoryForm
         return $schema
             ->components([
                 TextInput::make('name.en')
-                    ->label('Name (EN)')
+                    ->label(__('categories.fields.name_en'))
                     ->required()
                     ->maxLength(255),
 
                 TextInput::make('name.ar')
-                    ->label('Name (AR)')
+                    ->label(__('categories.fields.name_ar'))
                     ->required()
                     ->maxLength(255),
 
                 TextInput::make('description')
-                    ->label('Description')
+                    ->label(__('categories.fields.description'))
                     ->maxLength(255),
 
                 FileUpload::make('image_path')
-                    ->label('Category Image')
+                    ->label(__('categories.fields.image'))
                     ->image()
                     ->directory('categories')
                     ->disk('public')
                     ->visibility('public'),
 
                 Select::make('priority')
-                    ->label('Priority')
+                    ->label(__('categories.fields.priority'))
                     ->options([
-                        1 => 'Important',
-                        2 => 'Main',
-                        3 => 'Secondary',
+                        1 => __('categories.priorities.1'),
+                        2 => __('categories.priorities.2'),
+                        3 => __('categories.priorities.3'),
                     ])
                     ->default(1),
             ]);

@@ -12,6 +12,11 @@ class CreateLeaveRequest extends CreateRecord
 {
     protected static string $resource = LeaveRequestResource::class;
 
+    public function getTitle(): string
+    {
+        return __('leave_requests.pages.create');
+    }
+
     protected function mutateFormDataBeforeCreate(array $data): array
     {
         $data['employee_id'] = auth()->user()->employee->id;
@@ -35,8 +40,8 @@ class CreateLeaveRequest extends CreateRecord
 
             if ($requestedDays > $totalAvailable) {
                 Notification::make()
-                    ->title('Insufficient Balance')
-                    ->body("You only have {$totalAvailable} days available in your balance.")
+                    ->title(__('leave_requests.notifications.insufficient_balance.title'))
+                    ->body(__('leave_requests.notifications.insufficient_balance.body', ['days' => $totalAvailable]))
                     ->danger()
                     ->send();
 

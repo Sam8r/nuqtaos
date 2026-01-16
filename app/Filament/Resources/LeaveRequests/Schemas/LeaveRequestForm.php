@@ -10,6 +10,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
+use Illuminate\Support\Facades\Lang;
 use Modules\Settings\Models\Setting;
 
 class LeaveRequestForm
@@ -17,13 +18,15 @@ class LeaveRequestForm
     public static function configure(Schema $schema): Schema
     {
         $maxEncashmentDays = (int) Setting::value('encashment_limit');
+        $types = Lang::get('leave_requests.types');
 
         return $schema
             ->components([
                 Repeater::make('selected_dates')
-                    ->label('Selected Dates')
+                    ->label(__('leave_requests.fields.selected_dates'))
                     ->schema([
                         DatePicker::make('date')
+                            ->label(__('leave_requests.fields.date'))
                             ->required()
                             ->distinct()
                             ->minDate(now()),
@@ -41,30 +44,27 @@ class LeaveRequestForm
                     }),
 
                 Select::make('type')
-                    ->label('Leave Type')
-                    ->options([
-                        'Paid' => 'Paid',
-                        'Unpaid' => 'Unpaid',
-                    ])
+                    ->label(__('leave_requests.fields.type'))
+                    ->options($types)
                     ->reactive()
                     ->required()
                     ->afterStateUpdated(fn (Set $set) => $set('is_encashed', false)),
 
                 Checkbox::make('is_encashed')
-                    ->label('Request Cash Encashment')
-                    ->hidden(fn (Get $get) => $get('type') !== 'paid')
+                    ->label(__('leave_requests.fields.is_encashed'))
+                    ->hidden(fn (Get $get) => strtolower($get('type') ?? '') !== 'paid')
                     ->disabled(fn (Get $get) => count($get('selected_dates') ?? []) > $maxEncashmentDays)
                     ->reactive()
                     ->rules([
                         fn (Get $get): \Closure => function (string $attribute, $value, \Closure $fail) use ($get, $maxEncashmentDays) {
                             if ($value === true && count($get('selected_dates') ?? []) > $maxEncashmentDays) {
-                                $fail('You have exceeded the maximum allowed encashment limit.');
+                                $fail(__('leave_requests.validation.encashment_limit_exceeded'));
                             }
                         },
                     ]),
 
                 TextInput::make('reason')
-                    ->label('Reason')
+                    ->label(__('leave_requests.fields.reason'))
                     ->columnSpanFull(),
             ]);
     }

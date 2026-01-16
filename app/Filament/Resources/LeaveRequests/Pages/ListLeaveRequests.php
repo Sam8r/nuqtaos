@@ -10,10 +10,16 @@ class ListLeaveRequests extends ListRecords
 {
     protected static string $resource = LeaveRequestResource::class;
 
+    public function getTitle(): string
+    {
+        return __('leave_requests.pages.list');
+    }
+
     protected function getHeaderActions(): array
     {
         return [
-            CreateAction::make(),
+            CreateAction::make()
+                ->label(__('leave_requests.actions.create')),
         ];
     }
 }

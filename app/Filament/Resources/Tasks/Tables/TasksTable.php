@@ -16,33 +16,45 @@ class TasksTable
     {
         return $table
             ->columns([
-                TextColumn::make('title')->searchable(),
-                TextColumn::make('project.name')->label('Project'),
-                TextColumn::make('employee.name')->label('Assigned To'),
+                TextColumn::make('title')
+                    ->label(__('tasks.fields.title'))
+                    ->searchable(),
+                TextColumn::make('project.name')
+                    ->label(__('tasks.fields.project')),
+                TextColumn::make('employee.name')
+                    ->label(__('tasks.fields.assigned_to')),
                 TextColumn::make('status')
                     ->badge()
+                    ->label(__('tasks.fields.status'))
                     ->color(fn (string $state): string => match ($state) {
                         'New' => 'gray',
                         'In Progress' => 'warning',
                         'Review' => 'info',
                         'Completed' => 'success',
-                    }),
+                    })
+                    ->formatStateUsing(fn (string $state) => __('tasks.statuses.' . $state)),
                 TextColumn::make('priority')
                     ->badge()
+                    ->label(__('tasks.fields.priority'))
                     ->color(fn (string $state): string => match ($state) {
                         'High' => 'danger',
                         'Medium' => 'warning',
                         'Low' => 'success',
-                    }),
-                TextColumn::make('due_date')->date()->sortable(),
+                    })
+                    ->formatStateUsing(fn (string $state) => __('tasks.priorities.' . $state)),
+                TextColumn::make('due_date')
+                    ->label(__('tasks.fields.due_date'))
+                    ->date()
+                    ->sortable(),
             ])
             ->filters([
                 SelectFilter::make('status')
+                    ->label(__('tasks.filters.status'))
                     ->options([
-                        'New' => 'New',
-                        'In Progress' => 'In Progress',
-                        'Review' => 'Review',
-                        'Completed' => 'Completed',
+                        'New' => __('tasks.statuses.New'),
+                        'In Progress' => __('tasks.statuses.In Progress'),
+                        'Review' => __('tasks.statuses.Review'),
+                        'Completed' => __('tasks.statuses.Completed'),
                     ]),
             ])
             ->recordActions([

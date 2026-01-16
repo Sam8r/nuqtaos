@@ -9,65 +9,60 @@ use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
+use Illuminate\Support\Facades\Lang;
 
 class FinancialAdjustmentForm
 {
     public static function configure(Schema $schema): Schema
     {
+        $types = Lang::get('financial_adjustments.types');
+        $categoryGroups = Lang::get('financial_adjustments.category_groups');
+
         return $schema
             ->components([
                 Select::make('employee_id')
+                    ->label(__('financial_adjustments.fields.employee'))
                     ->relationship('employee', 'name')
                     ->searchable()
                     ->preload()
                     ->required(),
 
                 Select::make('type')
+                    ->label(__('financial_adjustments.fields.type'))
                     ->required()
                     ->live()
-                    ->options([
-                        'Bonus' => 'Bonus',
-                        'Deduction' => 'Deduction',
-                    ]),
+                    ->options($types),
 
                 Select::make('category')
+                    ->label(__('financial_adjustments.fields.category'))
                     ->required()
-                    ->options(fn ($get) =>
-                    $get('type') === 'Bonus'
-                        ? [
-                        'Performance-based' => 'Performance-based',
-                        'Attendance-based'  => 'Attendance-based',
-                        'Manual Bonus'      => 'Manual Bonus',
-                    ]
-                        : [
-                        'Leave Overuse'          => 'Leave Overuse',
-                        'Absence Without Notice' => 'Absence Without Notice',
-                        'Penalty'                => 'Penalty',
-                        'Loan / Advance'         => 'Loan / Advance',
-                    ]
-                    ),
+                    ->options(function ($get) use ($categoryGroups) {
+                        return $categoryGroups[$get('type')] ?? [];
+                    }),
 
                 TextInput::make('amount')
+                    ->label(__('financial_adjustments.fields.amount_cash'))
                     ->numeric()
                     ->minValue(0)
-                    ->label('Amount (Cash)')
                     ->live(debounce: 300)
                     ->required(fn (Get $get) => empty($get('days_count')))
                     ->disabled(fn (Get $get) => !empty($get('days_count'))),
 
                 TextInput::make('days_count')
+                    ->label(__('financial_adjustments.fields.days_count'))
                     ->numeric()
                     ->minValue(1)
-                    ->label('Days Count')
                     ->live(debounce: 300)
                     ->visible(fn (Get $get) => $get('type') === 'Deduction')
                     ->required(fn (Get $get) => $get('type') === 'Deduction' && empty($get('amount')))
                     ->disabled(fn (Get $get) => !empty($get('amount'))),
 
                 Textarea::make('reason')
+                    ->label(__('financial_adjustments.fields.reason'))
                     ->required(),
 
                 DatePicker::make('processing_date')
+                    ->label(__('financial_adjustments.fields.processing_date'))
                     ->required(),
 
                 Hidden::make('status')

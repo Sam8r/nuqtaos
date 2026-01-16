@@ -1,0 +1,66 @@
+<?php
+
+return [
+    'navigation_label' => 'Attendance',
+    'model_label' => 'Attendance Record',
+    'plural_model_label' => 'Attendance',
+    'fields' => [
+        'date' => 'Date',
+        'employee' => 'Employee',
+        'employee_name' => 'Employee Name',
+        'check_in' => 'Check-In Time',
+        'check_out' => 'Check-Out Time',
+        'break_duration' => 'Break Duration',
+        'break_duration_minutes' => 'Break Duration (minutes)',
+        'total_working_hours' => 'Total Working Hours',
+        'overtime_hours' => 'Overtime Hours',
+    ],
+    'actions' => [
+        'create' => 'Create Attendance',
+        'edit' => 'Edit Attendance',
+        'view' => 'View Attendance',
+        'delete' => 'Delete Attendance',
+    ],
+    'filters' => [
+        'period' => 'Filter by Period',
+        'custom_date' => 'Custom Date Range',
+        'from' => 'From Date',
+        'to' => 'To Date',
+        'today' => 'Today',
+        'yesterday' => 'Yesterday',
+        'this_week' => 'This Week',
+        'last_week' => 'Last Week',
+        'this_month' => 'This Month',
+        'last_month' => 'Last Month',
+    ],
+    'messages' => [
+        'not_checked_out' => 'Not checked out',
+        'not_calculated' => 'Not calculated',
+    ],
+    'suffixes' => [
+        'minutes' => ' minutes',
+        'hours' => ' hrs',
+    ],
+    'notifications' => [
+        'check_in_success_title' => 'Check In recorded successfully',
+        'check_out_success_title' => 'Check Out recorded successfully',
+        'check_out_success_body' => 'Worked: :worked hrs | Overtime: :overtime',
+        'gps_error_title' => 'GPS Error',
+        'gps_error_body' => 'Unable to retrieve location.',
+        'out_of_range_title' => 'Out of Range',
+        'out_of_range_body' => 'Distance: :distance m. Allowed: :allowed m.',
+        'location_denied_title' => 'Location Access Denied',
+        'location_denied_body' => 'Please enable GPS to record your attendance.',
+        'completed' => 'Completed',
+    ],
+    'buttons' => [
+        'check_in' => 'Check In',
+        'check_out' => 'Check Out',
+        'completed' => 'Completed',
+    ],
+    'statuses' => [
+        'success' => 'success',
+        'warning' => 'warning',
+        'secondary' => 'secondary',
+    ],
+];

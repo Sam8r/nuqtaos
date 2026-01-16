@@ -23,9 +23,29 @@ class ExpenseCategoryResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedTag;
 
-    protected static string | UnitEnum | null $navigationGroup = 'Expenses';
+    protected static string | UnitEnum | null $navigationGroup = null;
 
     protected static ?string $recordTitleAttribute = 'name';
+
+    public static function getNavigationGroup(): ?string
+    {
+        return __('expense_categories.navigation_group');
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return __('expense_categories.navigation_label');
+    }
+
+    public static function getModelLabel(): string
+    {
+        return __('expense_categories.model_label');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('expense_categories.plural_model_label');
+    }
 
     public static function form(Schema $schema): Schema
     {

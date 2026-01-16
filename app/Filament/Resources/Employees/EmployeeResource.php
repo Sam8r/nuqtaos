@@ -24,6 +24,21 @@ class EmployeeResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'name';
 
+    public static function getNavigationLabel(): string
+    {
+        return __('employees.navigation_label');
+    }
+
+    public static function getModelLabel(): string
+    {
+        return __('employees.model_label');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('employees.plural_model_label');
+    }
+
     public static function form(Schema $schema): Schema
     {
         return EmployeeForm::configure($schema);

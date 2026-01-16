@@ -14,9 +14,24 @@ use UnitEnum;
 class TaskBoard extends BoardPage
 {
     protected static string|null|\BackedEnum $navigationIcon = 'heroicon-o-view-columns';
-    protected static ?string $navigationLabel = 'Task Board';
-    protected static string | UnitEnum | null $navigationGroup = 'Tasks';
-    protected static ?string $title = 'Task Board';
+    protected static ?string $navigationLabel = null;
+    protected static string | UnitEnum | null $navigationGroup = null;
+    protected static ?string $title = null;
+
+    public static function getNavigationLabel(): string
+    {
+        return __('tasks.board.navigation_label');
+    }
+
+    public static function getNavigationGroup(): ?string
+    {
+        return __('tasks.board.navigation_group');
+    }
+
+    public function getTitle(): string
+    {
+        return __('tasks.board.title');
+    }
 
     public function board(Board $board): Board
     {
@@ -26,19 +41,21 @@ class TaskBoard extends BoardPage
             ->columnIdentifier('status')
             ->positionIdentifier('position') // Enable drag-and-drop with position field
             ->columns([
-                Column::make('New')->label('New Tasks')->color('gray'),
-                Column::make('In Progress')->label('In Progress')->color('info'),
-                Column::make('Review')->label('Under Review')->color('warning'),
-                Column::make('Completed')->label('Completed')->color('success'),
+                Column::make('New')->label(__('tasks.board.columns.New'))->color('gray'),
+                Column::make('In Progress')->label(__('tasks.board.columns.In Progress'))->color('info'),
+                Column::make('Review')->label(__('tasks.board.columns.Review'))->color('warning'),
+                Column::make('Completed')->label(__('tasks.board.columns.Completed'))->color('success'),
             ])
             ->cardSchema(fn (Schema $schema) => $schema->components([
                 TextEntry::make('priority')
+                    ->label(__('tasks.fields.priority'))
                     ->badge()
                     ->color(fn ($state) => match ($state) {
                         'High' => 'danger',
                         'Medium' => 'warning',
                         'Low' => 'success',
-                    }),
+                    })
+                    ->formatStateUsing(fn (string $state) => __('tasks.board.priorities.' . $state)),
             ]));
     }
 

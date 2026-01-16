@@ -17,34 +17,47 @@ class EmployeesTable
         return $table
             ->columns([
                 TextColumn::make('id')
-                    ->label('ID')
+                    ->label(__('employees.fields.id'))
                     ->sortable(),
                 TextColumn::make('name')
-                    ->label('Name')
+                    ->label(__('employees.fields.name'))
                     ->searchable(),
                 TextColumn::make('user.email')
+                    ->label(__('employees.fields.email'))
                     ->searchable(),
-                TextColumn::make('phone'),
+                TextColumn::make('phone')
+                    ->label(__('employees.fields.phone')),
                 TextColumn::make('position.name')
-                    ->label('Position'),
+                    ->label(__('employees.fields.position')),
                 TextColumn::make('department.name')
-                    ->label('Department'),
-                TextColumn::make('status'),
+                    ->label(__('employees.fields.department')),
+                TextColumn::make('status')
+                    ->label(__('employees.fields.status'))
+                    ->badge()
+                    ->formatStateUsing(fn ($state) => __('employees.statuses.' . $state)),
             ])
             ->filters([
-                SelectFilter::make('status')->options([
-                    'active' => 'Active',
-                    'inactive' => 'Inactive',
-                    'terminated' => 'Terminated',
-                    'on_leave' => 'On Leave',
-                ]),
-                SelectFilter::make('contract_type')->options([
-                    'full_time' => 'Full Time',
-                    'part_time' => 'Part Time',
-                    'intern' => 'Intern',
-                ]),
-                SelectFilter::make('department')->relationship('department', 'name'),
-                SelectFilter::make('position')->relationship('position', 'name'),
+                SelectFilter::make('status')
+                    ->label(__('employees.filters.status'))
+                    ->options([
+                        'Active' => __('employees.statuses.Active'),
+                        'Inactive' => __('employees.statuses.Inactive'),
+                        'Terminated' => __('employees.statuses.Terminated'),
+                        'On Leave' => __('employees.statuses.On Leave'),
+                    ]),
+                SelectFilter::make('contract_type')
+                    ->label(__('employees.filters.contract_type'))
+                    ->options([
+                        'Full Time' => __('employees.contract_types.Full Time'),
+                        'Part Time' => __('employees.contract_types.Part Time'),
+                        'Intern' => __('employees.contract_types.Intern'),
+                    ]),
+                SelectFilter::make('department')
+                    ->label(__('employees.filters.department'))
+                    ->relationship('department', 'name'),
+                SelectFilter::make('position')
+                    ->label(__('employees.filters.position'))
+                    ->relationship('position', 'name'),
             ])
             ->recordActions([
                 ViewAction::make(),

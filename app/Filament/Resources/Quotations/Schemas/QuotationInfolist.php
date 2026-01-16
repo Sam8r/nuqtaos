@@ -15,64 +15,64 @@ class QuotationInfolist
     {
         return $schema
             ->components([
-                Section::make('Quotation Details')
+                Section::make(__('quotations.sections.details'))
                     ->schema([
-                        TextEntry::make('number')->label('Quotation #'),
+                        TextEntry::make('number')->label(__('quotations.fields.number')),
                         TextEntry::make('issue_date')
-                            ->label('Issue Date')
+                            ->label(__('quotations.fields.issue_date'))
                             ->date(),
 
                         TextEntry::make('valid_until')
-                            ->label('Valid Until')
+                            ->label(__('quotations.fields.valid_until'))
                             ->date(),
 
-                        TextEntry::make('computed_status')->label('Status'),
+                        TextEntry::make('computed_status')->label(__('quotations.fields.computed_status')),
 
                         TextEntry::make('client.company_name')
-                            ->label('Client'),
+                            ->label(__('quotations.fields.client')),
 
                         TextEntry::make('terms_and_conditions')
-                            ->label('Terms & Conditions')
+                            ->label(__('quotations.fields.terms_and_conditions'))
                             ->markdown(),
                     ])
                     ->columns(2),
 
-                Section::make('Financial Summary')
+                Section::make(__('quotations.sections.financial_summary'))
                     ->schema([
                         TextEntry::make('subtotal')
-                            ->label('Subtotal'),
+                            ->label(__('quotations.fields.subtotal')),
 
                         TextEntry::make('discount_value')
-                            ->label('Discount Value'),
+                            ->label(__('quotations.fields.discount_value')),
 
                         TextEntry::make('discount_percent')
-                            ->label('Discount (%)'),
+                            ->label(__('quotations.fields.discount_percent')),
 
                         TextEntry::make('tax_value')
-                            ->label('Tax Value'),
+                            ->label(__('quotations.fields.tax_value')),
 
                         TextEntry::make('tax_percent')
-                            ->label('Tax (%)'),
+                            ->label(__('quotations.fields.tax_percent')),
 
                         TextEntry::make('discount_total')
-                            ->label('Discount Total'),
+                            ->label(__('quotations.fields.discount_total')),
 
                         TextEntry::make('tax_total')
-                            ->label('Tax Total'),
+                            ->label(__('quotations.fields.tax_total')),
 
                         TextEntry::make('total')
-                            ->label('Total'),
+                            ->label(__('quotations.fields.total')),
                     ])
                     ->columns(2),
 
-                Section::make('Items')
+                Section::make(__('quotations.sections.items'))
                     ->schema([
                         RepeatableEntry::make('items')
                             ->schema([
                                 Grid::make(6)
                                     ->schema([
                                         TextEntry::make('product_id')
-                                            ->label('Product')
+                                            ->label(__('quotations.fields.product'))
                                             ->state(fn ($record) => $record->product_id ? ($record->product->name ?? $record->custom_name) : $record->custom_name)
                                             ->state(fn ($record) => $record->product_id ? ($record->product->name ?? $record->custom_name) : $record->custom_name)
                                             ->url(fn ($record) => $record->product_id
@@ -81,27 +81,27 @@ class QuotationInfolist
                                             ),
 
                                         TextEntry::make('description')
-                                            ->label('Description')
+                                            ->label(__('quotations.fields.description'))
                                             ->markdown()
                                             ->columnSpan(2),
 
                                         TextEntry::make('quantity')
-                                            ->label('Qty'),
+                                            ->label(__('quotations.fields.quantity')),
 
                                         TextEntry::make('unit_price')
-                                            ->label('Unit Price'),
+                                            ->label(__('quotations.fields.unit_price')),
 
                                         TextEntry::make('total_price')
-                                            ->label('Total'),
+                                            ->label(__('quotations.fields.total_price')),
 
                                         TextEntry::make('discount_value')
-                                            ->label('Discount Value'),
+                                            ->label(__('quotations.fields.discount_value')),
 
                                         TextEntry::make('discount_percent')
-                                            ->label('Discount (%)'),
+                                            ->label(__('quotations.fields.discount_percent')),
                                     ]),
                             ])
-                            ->label('Quotation Items')
+                            ->label(__('quotations.fields.items'))
                             ->columnSpanFull(),
                     ])
                     ->columnSpanFull(),

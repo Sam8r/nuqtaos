@@ -15,8 +15,11 @@ class ExpenseCategoriesTable
     {
         return $table
             ->columns([
-                TextColumn::make('name'),
-                TextColumn::make('parent.name')->label('Parent Expense Category'),
+                TextColumn::make('name')
+                    ->label(__('expense_categories.fields.name')),
+                TextColumn::make('parent.name')
+                    ->label(__('expense_categories.fields.parent'))
+                    ->formatStateUsing(fn ($state) => $state ?? __('expense_categories.messages.no_parent')),
             ])
             ->filters([
                 //

@@ -20,7 +20,7 @@ class ViewLeaveRequest extends ViewRecord
     {
         return [
             Action::make('approve')
-                ->label('Approve')
+                ->label(__('leave_requests.actions.approve'))
                 ->color('success')
                 ->icon('heroicon-o-check-circle')
                 ->requiresConfirmation()
@@ -49,17 +49,20 @@ class ViewLeaveRequest extends ViewRecord
 
                     $record->update(['status' => 'Approved']);
 
-                    Notification::make()->title('Request Approved')->success()->send();
+                    Notification::make()
+                        ->title(__('leave_requests.notifications.request_approved'))
+                        ->success()
+                        ->send();
                 })
                 ->visible(fn ($record) => $record->status === 'Pending'),
             Action::make('reject')
-                ->label('Reject')
+                ->label(__('leave_requests.actions.reject'))
                 ->color('danger')
                 ->icon('heroicon-o-x-circle')
                 ->requiresConfirmation()
                 ->form([
                     Textarea::make('rejection_reason')
-                        ->label('Reason for rejection')
+                        ->label(__('leave_requests.prompts.rejection_reason'))
                         ->required(),
                 ])
                 ->action(function ($record, array $data) {
@@ -68,10 +71,14 @@ class ViewLeaveRequest extends ViewRecord
                         'rejection_reason' => $data['rejection_reason']
                     ]);
 
-                    Notification::make()->title('Request Rejected')->danger()->send();
+                    Notification::make()
+                        ->title(__('leave_requests.notifications.request_rejected'))
+                        ->danger()
+                        ->send();
                 })
                 ->visible(fn ($record) => $record->status === 'Pending'),
-            DeleteAction::make(),
+            DeleteAction::make()
+                ->label(__('leave_requests.actions.delete')),
         ];
     }
 }

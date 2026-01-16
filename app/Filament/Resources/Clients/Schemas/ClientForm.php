@@ -19,36 +19,41 @@ class ClientForm
 {
     public static function configure(Schema $schema): Schema
     {
-        $currencies = json_decode(
-            File::get(
-                base_path('vendor/umpirsky/currency-list/data/en/currency.json')
-            ),
-            true
-        );
+        $locale = strtolower(str_replace('_', '-', app()->getLocale() ?? 'en'));
+        $primaryLocale = explode('-', $locale)[0];
+
+        $currencyPath = base_path("vendor/umpirsky/currency-list/data/{$primaryLocale}/currency.json");
+
+        if (! File::exists($currencyPath)) {
+            $currencyPath = base_path('vendor/umpirsky/currency-list/data/en/currency.json');
+        }
+
+        $currencies = json_decode(File::get($currencyPath), true);
 
         $defaultCurrency = Setting::first()?->currency;
 
         return $schema
             ->components([
                 TextInput::make('company_name.en')
-                    ->label('Company Name (EN)')
+                    ->label(__('clients.fields.company_name_en'))
                     ->required()
                     ->maxLength(255),
                 TextInput::make('company_name.ar')
-                    ->label('Company Name (AR)')
+                    ->label(__('clients.fields.company_name_ar'))
                     ->required()
                     ->maxLength(255),
                 TextInput::make('contact_person_details')
-                    ->label('Contact Person Details')
+                    ->label(__('clients.fields.contact_person_details'))
                     ->maxLength(255),
                 TextInput::make('address')
-                    ->label('Address')
+                    ->label(__('clients.fields.address'))
                     ->required()
                     ->maxLength(255),
                 Repeater::make('emails')
                     ->relationship('emails')
                     ->schema([
                         TextInput::make('email')
+                            ->label(__('clients.fields.email'))
                             ->email()
                             ->required()
                             ->rules([
@@ -58,12 +63,13 @@ class ClientForm
                                 ],
                             ])
                     ])
-                    ->label('Emails')
+                    ->label(__('clients.fields.emails'))
                     ->columns(1),
                 Repeater::make('phones')
                     ->relationship('phones')
                     ->schema([
                         TextInput::make('phone')
+                            ->label(__('clients.fields.phone'))
                             ->required()
                             ->rules([
                                 fn ($record) => [
@@ -72,13 +78,13 @@ class ClientForm
                                 ],
                             ])
                     ])
-                    ->label('Phones')
+                    ->label(__('clients.fields.phones'))
                     ->columns(1),
                 TextInput::make('tax_number')
-                    ->label('Tax Number')
+                    ->label(__('clients.fields.tax_number'))
                     ->maxLength(255),
                 FileUpload::make('registration_documents')
-                    ->label('Registration Documents')
+                    ->label(__('clients.fields.registration_documents'))
                     ->multiple()
                     ->directory('registration_docs')
                     ->disk('public')
@@ -97,50 +103,51 @@ class ClientForm
 
                         return Str::slug($originalName) . '-' . rand(1000, 9999) . '.' . $extension;
                     })
-                    ->helperText('Allowed file types: jpg, jpeg, png, webp, pdf, doc, docx.'),
+                    ->helperText(__('clients.helper_texts.registration_documents')),
                 Grid::make(2)
                     ->schema([
                         TextInput::make('credit_limit')
-                            ->label('Credit Limit')
+                            ->label(__('clients.fields.credit_limit'))
                             ->numeric()
                             ->required(),
 
                         Select::make('credit_currency')
-                            ->label('Currency')
+                            ->label(__('clients.fields.credit_currency'))
                             ->options($currencies)
                             ->default($defaultCurrency)
                             ->searchable()
                             ->required(),
                     ]),
                 TextInput::make('payment_terms.en')
-                    ->label('Payment Terms (EN)')
+                    ->label(__('clients.fields.payment_terms_en'))
                     ->maxLength(255),
                 TextInput::make('payment_terms.ar')
-                    ->label('Payment Terms (AR)')
+                    ->label(__('clients.fields.payment_terms_ar'))
                     ->maxLength(255),
                 TextInput::make('industry_type.en')
-                    ->label('Industry Type (EN)')
+                    ->label(__('clients.fields.industry_type_en'))
                     ->maxLength(255),
                 TextInput::make('industry_type.ar')
-                    ->label('Industry Type (AR)')
+                    ->label(__('clients.fields.industry_type_ar'))
                     ->maxLength(255),
                 Select::make('status')
-                    ->label('Status')
+                    ->label(__('clients.fields.status'))
                     ->options([
-                        'Active' => 'Active',
-                        'Inactive' => 'Inactive',
-                        'Pending' => 'Pending',
+                        'Active' => __('clients.statuses.Active'),
+                        'Inactive' => __('clients.statuses.Inactive'),
+                        'Pending' => __('clients.statuses.Pending'),
                     ])
                     ->required(),
                 Select::make('tier')
-                    ->label('Tier')
+                    ->label(__('clients.fields.tier'))
                     ->options([
-                        'Gold' => 'Gold',
-                        'Silver' => 'Silver',
-                        'Bronze' => 'Bronze',
+                        'Gold' => __('clients.tiers.Gold'),
+                        'Silver' => __('clients.tiers.Silver'),
+                        'Bronze' => __('clients.tiers.Bronze'),
                     ])
                     ->required(),
                 Country::make('country')
+                    ->label(__('clients.fields.country'))
                     ->required(),
         ]);
     }

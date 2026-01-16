@@ -4,9 +4,7 @@ namespace App\Filament\Resources\Payrolls\Schemas;
 
 use Carbon\Carbon;
 use Filament\Schemas\Components\Grid;
-use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Tabs;
@@ -15,8 +13,6 @@ use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
 use Modules\Attendances\Models\Attendance;
 use Modules\Employees\Models\Employee;
-use Modules\FinancialAdjustments\Models\FinancialAdjustment;
-use Modules\Leaves\Models\LeaveRequest;
 use Modules\Settings\Models\Setting;
 
 class PayrollForm
@@ -25,22 +21,25 @@ class PayrollForm
     {
         return $schema
             ->schema([
-                Tabs::make('Payroll Process')
+                Tabs::make('payroll_process')
+                    ->label(__('payrolls.tabs.process'))
                     ->tabs([
-                        Tabs\Tab::make('Salary Overview')
+                        Tabs\Tab::make(__('payrolls.tabs.salary_overview'))
                             ->icon('heroicon-o-banknotes')
                             ->schema([
-                                Section::make('Selection & Period')
+                                Section::make(__('payrolls.sections.selection_period'))
                                     ->schema([
                                         Grid::make(2)->schema([
                                             Select::make('employee_id')
-                                                ->label('Employee')
-                                                ->options(Employee::all()->pluck('name', 'id'))
+                                                ->label(__('payrolls.fields.employee'))
+                                                ->relationship('employee', 'name')
+                                                ->searchable()
+                                                ->preload()
                                                 ->required()
                                                 ->reactive()
                                                 ->afterStateUpdated(fn(Get $get, Set $set) => self::calculatePayroll($get, $set)),
                                             TextInput::make('month_year')
-                                                ->label('Calculation Month')
+                                                ->label(__('payrolls.fields.month_year'))
                                                 ->type('month')
                                                 ->required()
                                                 ->reactive()
@@ -48,25 +47,61 @@ class PayrollForm
                                         ]),
                                     ]),
 
-                                Section::make('Payroll Results')
+                                Section::make(__('payrolls.sections.results'))
                                     ->schema([
-                                        Grid::make(3)->schema([
-                                            TextInput::make('basic_salary')->label('Basic Salary')->disabled()->dehydrated()->prefix('$'),
-                                            TextInput::make('daily_rate')->label('Daily Rate (Fixed 1/30)')->disabled()->dehydrated()->prefix('$'),
-                                            TextInput::make('working_days_target')->label('Target Working Days')->disabled()->dehydrated(),
-                                            TextInput::make('bonuses_total')->label('Total Additions')->disabled()->dehydrated()->prefix('$'),
-                                            TextInput::make('deductions_total')->label('Total Deductions')->disabled()->dehydrated()->prefix('$'),
-                                            TextInput::make('net_salary')
-                                                ->label('Net Salary')
-                                                ->disabled()
-                                                ->dehydrated()
-                                                ->columnSpanFull()
-                                                ->extraInputAttributes(['style' => 'font-weight: bold; color: #10b981; font-size: 1.25rem;']),
-                                        ]),
+                                        Grid::make(3)->schema(
+                                            self::salarySummaryFields()
+                                        ),
                                     ]),
                             ]),
                     ])->columnSpanFull(),
             ]);
+    }
+
+    protected static function salarySummaryFields(): array
+    {
+        $currency = Setting::value('salary_currency') ?? 'USD';
+
+        return [
+            TextInput::make('basic_salary')
+                ->label(__('payrolls.fields.basic_salary'))
+                ->disabled()
+                ->dehydrated()
+                ->prefix($currency),
+
+            TextInput::make('daily_rate')
+                ->label(__('payrolls.fields.daily_rate'))
+                ->disabled()
+                ->dehydrated()
+                ->prefix($currency),
+
+            TextInput::make('working_days_target')
+                ->label(__('payrolls.fields.working_days_target'))
+                ->disabled()
+                ->dehydrated(),
+
+            TextInput::make('bonuses_total')
+                ->label(__('payrolls.fields.bonuses_total'))
+                ->disabled()
+                ->dehydrated()
+                ->prefix($currency),
+
+            TextInput::make('deductions_total')
+                ->label(__('payrolls.fields.deductions_total'))
+                ->disabled()
+                ->dehydrated()
+                ->prefix($currency),
+
+            TextInput::make('net_salary')
+                ->label(__('payrolls.fields.net_salary'))
+                ->disabled()
+                ->dehydrated()
+                ->prefix($currency)
+                ->columnSpanFull()
+                ->extraInputAttributes([
+                    'style' => 'font-weight: bold; color: #10b981; font-size: 1.25rem;',
+                ]),
+        ];
     }
 
     private static function calculatePayroll(Get $get, Set $set): void

@@ -14,11 +14,11 @@ class CategoryInfolist
         return $schema
             ->components([
                 TextEntry::make('name')
-                    ->label('Name'),
+                    ->label(__('categories.fields.name')),
                 TextEntry::make('description')
-                    ->label('Description'),
+                    ->label(__('categories.fields.description')),
                 ImageEntry::make('image_path')
-                    ->label('Category Image')
+                    ->label(__('categories.fields.image'))
                     ->disk('public')
                     ->getStateUsing(fn ($record) => $record->image_path
                         ? asset('storage/' . $record->image_path)
@@ -31,11 +31,13 @@ class CategoryInfolist
                     ->action(
                         MediaAction::make('view')
                             ->media(fn ($state) => $state)
-                            ->modalHeading('View Category Image')
+                            ->modalHeading(__('categories.modals.view_image'))
                             ->slideOver()
-                    ),
+                    )
+                    ->placeholder(__('categories.messages.no_image')),
                 TextEntry::make('priority')
-                    ->label('Priority'),
+                    ->label(__('categories.fields.priority'))
+                    ->formatStateUsing(fn ($state) => $state ? __('categories.priorities.' . $state) : null),
             ]);
     }
 }

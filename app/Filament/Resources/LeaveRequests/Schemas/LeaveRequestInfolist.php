@@ -14,12 +14,13 @@ class LeaveRequestInfolist
         return $schema
             ->components([
                 TextEntry::make('employee.name')
-                    ->label('Employee')
+                    ->label(__('leave_requests.fields.employee'))
                     ->url(fn (string $state, $record) => route('filament.admin.resources.employees.view', ['record' => $record->employee])),
 
                 TextEntry::make('type')
-                    ->label('Leave Type')
-                    ->badge(),
+                    ->label(__('leave_requests.fields.type'))
+                    ->badge()
+                    ->formatStateUsing(fn ($state) => __('leave_requests.types.' . strtolower($state))),
 
                 TextEntry::make('status')
                     ->badge()
@@ -27,31 +28,33 @@ class LeaveRequestInfolist
                         'Approved' => 'success',
                         'Rejected' => 'danger',
                         default => 'warning',
-                    }),
+                    })
+                    ->formatStateUsing(fn ($state) => __('leave_requests.statuses.' . ucfirst($state))),
 
                 TextEntry::make('total_days')
-                    ->label('Total Days'),
+                    ->label(__('leave_requests.fields.total_days')),
 
                 IconEntry::make('is_encashed')
-                    ->label('Encashed')
+                    ->label(__('leave_requests.fields.encashed'))
                     ->boolean(),
 
                 RepeatableEntry::make('selected_dates')
-                    ->label('Selected Dates')
+                    ->label(__('leave_requests.fields.selected_dates'))
                     ->schema([
                         TextEntry::make('date')
-                            ->label('Date'),
+                            ->label(__('leave_requests.fields.date')),
                     ]),
 
-                TextEntry::make('reason'),
+                TextEntry::make('reason')
+                    ->label(__('leave_requests.fields.reason')),
 
                 TextEntry::make('rejection_reason')
-                    ->label('Rejection Reason')
+                    ->label(__('leave_requests.fields.rejection_reason'))
                     ->color('danger')
-                    ->visible(fn ($record) => $record->status === 'rejected' && $record->rejection_reason),
+                    ->visible(fn ($record) => strtolower($record->status) === 'rejected' && $record->rejection_reason),
 
                 TextEntry::make('created_at')
-                    ->label('Requested At')
+                    ->label(__('leave_requests.fields.created_at'))
                     ->date(),
             ])
             ->columns(2);

@@ -13,15 +13,15 @@ class PositionForm
         return $schema
             ->components([
                 TextInput::make('name.en')
-                    ->label('Name (EN)')
+                    ->label(__('positions.fields.name_en'))
                     ->required()
                     ->maxLength(255),
                 TextInput::make('name.ar')
-                    ->label('Name (AR)')
+                    ->label(__('positions.fields.name_ar'))
                     ->required()
                     ->maxLength(255),
                 Select::make('department_id')
-                    ->label('Department')
+                    ->label(__('positions.fields.department'))
                     ->relationship('department', 'name')
                     ->searchable()
                     ->preload()

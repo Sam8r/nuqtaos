@@ -25,9 +25,29 @@ class TaskResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedClipboardDocumentCheck;
 
-    protected static string | UnitEnum | null $navigationGroup = 'Tasks';
+    protected static string | UnitEnum | null $navigationGroup = null;
 
     protected static ?string $recordTitleAttribute = 'title';
+
+    public static function getNavigationGroup(): ?string
+    {
+        return __('tasks.navigation_group');
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return __('tasks.navigation_label');
+    }
+
+    public static function getModelLabel(): string
+    {
+        return __('tasks.model_label');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('tasks.plural_model_label');
+    }
 
     public static function form(Schema $schema): Schema
     {

@@ -37,9 +37,15 @@ class ListAttendances extends ListRecords
                         ->where('date', now()->toDateString())
                         ->first();
 
-                    if (!$attendance || !$attendance->check_in) return 'Check In';
-                    if (!$attendance->check_out) return 'Check Out';
-                    return 'Completed';
+                    if (! $attendance || ! $attendance->check_in) {
+                        return __('attendances.buttons.check_in');
+                    }
+
+                    if (! $attendance->check_out) {
+                        return __('attendances.buttons.check_out');
+                    }
+
+                    return __('attendances.buttons.completed');
                 })
                 ->color(function () {
                     $user = auth()->user();
@@ -47,9 +53,15 @@ class ListAttendances extends ListRecords
                         ->where('date', now()->toDateString())
                         ->first();
 
-                    if (!$attendance || !$attendance->check_in) return 'success';
-                    if (!$attendance->check_out) return 'warning';
-                    return 'secondary';
+                    if (! $attendance || ! $attendance->check_in) {
+                        return __('attendances.statuses.success');
+                    }
+
+                    if (! $attendance->check_out) {
+                        return __('attendances.statuses.warning');
+                    }
+
+                    return __('attendances.statuses.secondary');
                 })
                 ->disabled(function () {
                     $user = auth()->user();
@@ -59,21 +71,25 @@ class ListAttendances extends ListRecords
                     return $attendance && $attendance->check_in && $attendance->check_out;
                 })
                 ->alpineClickHandler(
-                    "window.navigator.geolocation.getCurrentPosition(
-                        (position) => {
-                            \$wire.mountAction('toggleAttendance', {
-                                lat: position.coords.latitude,
-                                lng: position.coords.longitude
-                            });
-                        },
-                        (error) => {
-                            new FilamentNotification()
-                                .title('Location Access Denied')
-                                .body('Please enable GPS to record your attendance.')
-                                .danger()
-                                .send();
-                        }
-                    )"
+                    sprintf(
+                        "window.navigator.geolocation.getCurrentPosition(
+                            (position) => {
+                                \$wire.mountAction('toggleAttendance', {
+                                    lat: position.coords.latitude,
+                                    lng: position.coords.longitude
+                                });
+                            },
+                            (error) => {
+                                new FilamentNotification()
+                                    .title('%s')
+                                    .body('%s')
+                                    .danger()
+                                    .send();
+                            }
+                        )",
+                        __('attendances.notifications.location_denied_title'),
+                        __('attendances.notifications.location_denied_body')
+                    )
                 )
                 ->action(function (array $arguments) {
                     $user = auth()->user();
@@ -88,10 +104,10 @@ class ListAttendances extends ListRecords
                         $userLat = $arguments['lat'] ?? null;
                         $userLon = $arguments['lng'] ?? null;
 
-                        if (!$userLat || !$userLon) {
+                        if (! $userLat || ! $userLon) {
                             Notification::make()
-                                ->title('GPS Error')
-                                ->body('Unable to retrieve location.')
+                                ->title(__('attendances.notifications.gps_error_title'))
+                                ->body(__('attendances.notifications.gps_error_body'))
                                 ->danger()
                                 ->send();
                             return;
@@ -106,8 +122,11 @@ class ListAttendances extends ListRecords
 
                         if ($distance > $settings->radius_meter) {
                             Notification::make()
-                                ->title('Out of Range')
-                                ->body("Distance: " . round($distance) . "m. Allowed: " . $settings->radius_meter . "m.")
+                                ->title(__('attendances.notifications.out_of_range_title'))
+                                ->body(__('attendances.notifications.out_of_range_body', [
+                                    'distance' => round($distance),
+                                    'allowed' => $settings->radius_meter,
+                                ]))
                                 ->danger()
                                 ->send();
                             return;
@@ -119,11 +138,14 @@ class ListAttendances extends ListRecords
                         'date' => now()->toDateString(),
                     ]);
 
-                    if (!$attendance->check_in) {
+                    if (! $attendance->check_in) {
                         $attendance->update(['check_in' => now()]);
-                        Notification::make()->title('Check In recorded successfully')->success()->send();
+                        Notification::make()
+                            ->title(__('attendances.notifications.check_in_success_title'))
+                            ->success()
+                            ->send();
                     }
-                    elseif (!$attendance->check_out) {
+                    elseif (! $attendance->check_out) {
                         $workStart = Carbon::parse($employee->work_start ?? $settings->default_work_from);
                         $workEnd = Carbon::parse($employee->work_end ?? $settings->default_work_to);
                         $overtimeThreshold = $settings->overtime_minutes ?? 30;
@@ -147,8 +169,11 @@ class ListAttendances extends ListRecords
                         ]);
 
                         Notification::make()
-                            ->title('Check Out recorded successfully')
-                            ->body("Worked: " . round($workedMinutes / 60, 2) . " hrs | Overtime: " . $overtimeHours)
+                            ->title(__('attendances.notifications.check_out_success_title'))
+                            ->body(__('attendances.notifications.check_out_success_body', [
+                                'worked' => round($workedMinutes / 60, 2),
+                                'overtime' => $overtimeHours,
+                            ]))
                             ->success()
                             ->send();
                     }

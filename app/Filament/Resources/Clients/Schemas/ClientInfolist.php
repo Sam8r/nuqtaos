@@ -23,20 +23,35 @@ class ClientInfolist
 {
     public static function configure(Schema $schema): Schema
     {
+        $locale = strtolower(str_replace('_', '-', app()->getLocale() ?? 'en'));
+        $primaryLocale = explode('-', $locale)[0];
+
+        $countryPath = base_path("vendor/umpirsky/country-list/data/{$primaryLocale}/country.php");
+
+        if (! file_exists($countryPath)) {
+            $countryPath = base_path('vendor/umpirsky/country-list/data/en/country.php');
+        }
+
+        $countries = require $countryPath;
+
         return $schema
             ->components([
-                TextEntry::make('company_name')->label('Company Name'),
-                TextEntry::make('contact_person_details')->label('Contact Person Details'),
-                TextEntry::make('address')->label('Address'),
+                TextEntry::make('company_name')
+                    ->label(__('clients.fields.company_name')),
+                TextEntry::make('contact_person_details')
+                    ->label(__('clients.fields.contact_person_details')),
+                TextEntry::make('address')
+                    ->label(__('clients.fields.address')),
                 TextEntry::make('emails')
-                    ->label('Emails')
+                    ->label(__('clients.fields.emails'))
                     ->state(fn ($record) => $record->emails->pluck('email')->join(', ')),
                 TextEntry::make('phones')
-                    ->label('Phones')
+                    ->label(__('clients.fields.phones'))
                     ->state(fn ($record) => $record->phones->pluck('phone')->join(', ')),
-                TextEntry::make('tax_number')->label('Tax Number'),
+                TextEntry::make('tax_number')
+                    ->label(__('clients.fields.tax_number')),
                 RepeatableEntry::make('registration_documents_images')
-                    ->label('Registration Documents Images')
+                    ->label(__('clients.document_labels.images'))
                     ->state(fn ($record) => collect($record->registration_documents ?? [])
                         ->filter(fn ($file) => preg_match('/\.(jpg|jpeg|png|webp)$/i', $file))
                         ->map(fn ($file) => [
@@ -48,46 +63,59 @@ class ClientInfolist
                     )
                     ->schema([
                         ImageEntry::make('url')
-                            ->label('Image')
+                            ->label(__('clients.document_labels.image'))
                             ->square()
                             ->size(200)
                             ->extraImgAttributes(['class' => 'cursor-pointer hover:opacity-80 transition-opacity'])
                             ->action(
                                 MediaAction::make('view')
                                     ->media(fn ($state) => $state)
-                                    ->modalHeading('View Registration Documents Image')
+                                    ->modalHeading(__('clients.modals.view_document_image'))
                                     ->slideOver()
                             ),
                         TextEntry::make('name')
-                            ->label('File Name')
+                            ->label(__('clients.document_labels.file_name'))
                             ->color('gray'),
                     ])
                     ->grid(2) // Display 3 items per row
                     ->columnSpan(1), // Takes half the available width
-                Section::make('Registration Documents')
+                Section::make(__('clients.sections.registration_documents'))
                     ->schema([
                         TextEntry::make('registration_documents_list')
-                            ->label('Documents')
+                            ->label(__('clients.document_labels.files'))
                             ->state(fn ($record) => collect($record->registration_documents ?? [])
                                 ->filter(fn ($file) => preg_match('/\.(pdf|doc|docx)$/i', $file))
-                                ->map(fn ($file) => sprintf(
-                                    '<a href="%s" target="_blank" class="text-primary-600 hover:text-primary-800 hover:underline font-medium block mb-1">%s <br></a>',
-                                    asset('storage/' . $file),
-                                    basename($file)
+                                ->map(fn ($file) => __(
+                                    'clients.messages.document_link',
+                                    [
+                                        'url' => asset('storage/' . $file),
+                                        'name' => basename($file),
+                                    ]
                                 ))
                                 ->join('')
                             )
                             ->html()
-                            ->placeholder('No documents available'),
+                            ->placeholder(__('clients.messages.no_documents')),
                     ]),
                 TextEntry::make('credit_limit')
-                    ->label('Credit Limit')
+                    ->label(__('clients.fields.credit_limit'))
                     ->money(fn ($record) => $record->credit_currency),
-                TextEntry::make('payment_terms')->label('Payment Terms'),
-                TextEntry::make('industry_type')->label('Industry Type'),
-                TextEntry::make('status')->label('Status')->badge(),
-                TextEntry::make('tier')->label('Tier')->badge(),
-                CountryEntry::make('country')->label('Country')->color('primary'),
+                TextEntry::make('payment_terms')
+                    ->label(__('clients.fields.payment_terms')),
+                TextEntry::make('industry_type')
+                    ->label(__('clients.fields.industry_type')),
+                TextEntry::make('status')
+                    ->label(__('clients.fields.status'))
+                    ->badge()
+                    ->formatStateUsing(fn (string $state): string => __('clients.statuses.' . $state)),
+                TextEntry::make('tier')
+                    ->label(__('clients.fields.tier'))
+                    ->badge()
+                    ->formatStateUsing(fn (string $state): string => __('clients.tiers.' . $state)),
+                CountryEntry::make('country')
+                    ->label(__('clients.fields.country'))
+                    ->formatStateUsing(fn ($state) => $countries[$state] ?? $state)
+                    ->color('primary'),
             ]);
     }
 }

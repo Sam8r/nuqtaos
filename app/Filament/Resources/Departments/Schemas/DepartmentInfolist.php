@@ -11,9 +11,12 @@ class DepartmentInfolist
     {
         return $schema
             ->components([
-                TextEntry::make('name'),
+                TextEntry::make('name')
+                    ->label(__('departments.fields.name')),
                 TextEntry::make('parent.name')
-                    ->label('Parent Department')
+                    ->label(__('departments.fields.parent'))
+                    ->state(fn ($record) => $record->parent?->name)
+                    ->placeholder(__('departments.messages.no_parent'))
                     ->url(fn ($record) => $record->parent ? route('filament.admin.resources.departments.view', $record->parent) : null
                     ),
             ]);

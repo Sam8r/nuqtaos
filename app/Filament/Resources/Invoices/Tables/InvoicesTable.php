@@ -15,7 +15,6 @@ use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Modules\Invoices\Services\InvoicesPdfService;
-use Modules\Quotations\Services\QuotationPdfService;
 use Modules\Settings\Models\Setting;
 
 class InvoicesTable
@@ -25,31 +24,35 @@ class InvoicesTable
         return $table
             ->columns([
                 TextColumn::make('number')
-                    ->label('Invoice #')
+                    ->label(__('invoices.fields.number'))
                     ->sortable()
                     ->searchable(),
 
                 TextColumn::make('issue_date')
+                    ->label(__('invoices.fields.issue_date'))
                     ->sortable()
                     ->date(),
 
                 TextColumn::make('due_date')
+                    ->label(__('invoices.fields.due_date'))
                     ->sortable()
                     ->date(),
 
                 TextColumn::make('client.company_name')
-                    ->label('Client')
+                    ->label(__('invoices.fields.client'))
                     ->sortable()
                     ->searchable(),
 
                 BadgeColumn::make('status')
+                    ->label(__('invoices.fields.status'))
                     ->colors([
                         'Draft' => 'secondary',
                         'Pending' => 'warning',
                         'Partially Paid' => 'info',
                         'Paid' => 'success',
                         'Overdue' => 'danger',
-                    ]),
+                    ])
+                    ->formatStateUsing(fn (string $state) => __('invoices.statuses.' . $state)),
 
                 TextColumn::make('total')
                     ->sortable()
@@ -57,13 +60,13 @@ class InvoicesTable
             ])
             ->filters([
                 SelectFilter::make('computed_status')
-                    ->label('Status')
+                    ->label(__('invoices.filters.status'))
                     ->options([
-                        'Draft' => 'Draft',
-                        'Pending' => 'Pending',
-                        'Partially Paid' => 'Partially Paid',
-                        'Paid' => 'Paid',
-                        'Overdue' => 'Overdue',
+                        'Draft' => __('invoices.statuses.Draft'),
+                        'Pending' => __('invoices.statuses.Pending'),
+                        'Partially Paid' => __('invoices.statuses.Partially Paid'),
+                        'Paid' => __('invoices.statuses.Paid'),
+                        'Overdue' => __('invoices.statuses.Overdue'),
                     ])
                     ->query(function (Builder $query, array $data) {
                         if (!isset($data['value'])) {
@@ -88,7 +91,7 @@ class InvoicesTable
                 ViewAction::make(),
                 EditAction::make(),
                 Action::make('print_direct')
-                    ->label('Print')
+                    ->label(__('invoices.actions.print'))
                     ->icon('heroicon-o-document-text')
                     ->color('primary')
                     ->visible(fn () => filled(Setting::query()->value('default_printable_language')))
@@ -99,15 +102,18 @@ class InvoicesTable
                     }),
 
                 Action::make('print_modal')
-                    ->label('Print')
+                    ->label(__('invoices.actions.print'))
                     ->icon('heroicon-o-document-text')
                     ->color('primary')
                     ->visible(fn () => blank(Setting::query()->value('default_printable_language')))
-                    ->modalHeading('Select Print Language')
+                    ->modalHeading(__('invoices.prompts.select_print_language'))
                     ->form([
                         Radio::make('lang')
-                            ->label('Language')
-                            ->options(['ar' => 'Arabic', 'en' => 'English'])
+                            ->label(__('invoices.prompts.print_language'))
+                            ->options([
+                                'ar' => __('invoices.languages.ar'),
+                                'en' => __('invoices.languages.en'),
+                            ])
                             ->required(),
                     ])
                     ->action(function (array $data, $record) {

@@ -23,6 +23,21 @@ class PayrollResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedCurrencyDollar;
 
+    public static function getNavigationLabel(): string
+    {
+        return __('payrolls.navigation_label');
+    }
+
+    public static function getModelLabel(): string
+    {
+        return __('payrolls.model_label');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('payrolls.plural_model_label');
+    }
+
     public static function form(Schema $schema): Schema
     {
         return PayrollForm::configure($schema);

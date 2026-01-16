@@ -21,24 +21,29 @@ class CategoriesTable
     {
         return $table
             ->columns([
-                TextColumn::make('name')->label('Name')->searchable(),
-                TextColumn::make('description')->label('Description')->limit(50),
-                ImageColumn::make('image_path')->label('Image')->disk('public')->size(50)->action(
+                TextColumn::make('name')
+                    ->label(__('categories.fields.name'))
+                    ->searchable(),
+                TextColumn::make('description')
+                    ->label(__('categories.fields.description'))
+                    ->limit(50),
+                ImageColumn::make('image_path')->label(__('categories.fields.image'))->disk('public')->size(50)->action(
                     MediaAction::make('view')
                         ->media(fn ($state) => $state)
-                        ->modalHeading('View Category Image')
+                        ->modalHeading(__('categories.modals.view_image'))
                         ->slideOver()
                 )
             ])
             ->filters([
                 SelectFilter::make('priority')
-                    ->label('Priority')
+                    ->label(__('categories.filters.priority'))
                     ->options([
-                        1 => 'Important',
-                        2 => 'Main',
-                        3 => 'Secondary',
+                        1 => __('categories.priorities.1'),
+                        2 => __('categories.priorities.2'),
+                        3 => __('categories.priorities.3'),
                     ]),
-                TrashedFilter::make(),
+                TrashedFilter::make()
+                    ->label(__('categories.filters.trashed')),
             ])
             ->recordActions([
                 ViewAction::make(),
@@ -46,9 +51,12 @@ class CategoriesTable
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
-                    DeleteBulkAction::make(),
-                    ForceDeleteBulkAction::make(),
-                    RestoreBulkAction::make(),
+                    DeleteBulkAction::make()
+                        ->label(__('categories.actions.delete')),
+                    ForceDeleteBulkAction::make()
+                        ->label(__('categories.actions.force_delete')),
+                    RestoreBulkAction::make()
+                        ->label(__('categories.actions.restore')),
                 ]),
             ]);
     }

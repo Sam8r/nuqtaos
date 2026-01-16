@@ -26,6 +26,21 @@ class ProductResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'name';
 
+    public static function getNavigationLabel(): string
+    {
+        return __('products.navigation_label');
+    }
+
+    public static function getModelLabel(): string
+    {
+        return __('products.model_label');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('products.plural_model_label');
+    }
+
     public static function form(Schema $schema): Schema
     {
         return ProductForm::configure($schema);

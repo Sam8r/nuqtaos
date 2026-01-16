@@ -24,6 +24,21 @@ class AttendanceResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'date';
 
+    public static function getNavigationLabel(): string
+    {
+        return __('attendances.navigation_label');
+    }
+
+    public static function getModelLabel(): string
+    {
+        return __('attendances.model_label');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('attendances.plural_model_label');
+    }
+
     public static function form(Schema $schema): Schema
     {
         return AttendanceForm::configure($schema);

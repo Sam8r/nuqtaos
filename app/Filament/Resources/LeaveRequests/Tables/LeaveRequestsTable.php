@@ -22,46 +22,45 @@ class LeaveRequestsTable
         return $table
             ->columns([
                 TextColumn::make('employee.name')
-                    ->label('Employee')
+                    ->label(__('leave_requests.fields.employee'))
                     ->searchable(),
 
                 TextColumn::make('type')
-                    ->label('Type')
-                    ->badge(),
+                    ->label(__('leave_requests.fields.type'))
+                    ->badge()
+                    ->formatStateUsing(fn ($state) => __('leave_requests.types.' . strtolower($state))),
 
                 TextColumn::make('total_days')
-                    ->label('Total Days')
+                    ->label(__('leave_requests.fields.total_days'))
                     ->sortable(),
 
                 TextColumn::make('status')
-                    ->label('Status')
+                    ->label(__('leave_requests.fields.status'))
                     ->badge()
                     ->colors([
                         'warning' => 'Pending',
                         'success' => 'Approved',
                         'danger'  => 'Rejected',
-                    ]),
+                    ])
+                    ->formatStateUsing(fn ($state) => __('leave_requests.statuses.' . $state)),
 
                 IconColumn::make('is_encashed')
-                    ->label('Encashed')
+                    ->label(__('leave_requests.fields.encashed'))
                     ->boolean(),
 
                 TextColumn::make('created_at')
-                    ->label('Requested At')
+                    ->label(__('leave_requests.fields.created_at'))
                     ->date(),
             ])
             ->defaultSort('created_at', 'desc')
             ->filters([
                 SelectFilter::make('period')
-                    ->label('Filter by Period')
-                    ->options([
-                        'today' => 'Today',
-                        'yesterday' => 'Yesterday',
-                        'this_week' => 'This Week',
-                        'last_week' => 'Last Week',
-                        'this_month' => 'This Month',
-                        'last_month' => 'Last Month',
-                    ])
+                    ->label(__('leave_requests.filters.period'))
+                    ->options(
+                        collect(__('leave_requests.periods'))
+                            ->mapWithKeys(fn ($label, $value) => [$value => $label])
+                            ->toArray()
+                    )
                     ->query(function (Builder $query, array $data): Builder {
                         return $query->when($data['value'], function (Builder $query, $value) {
                             return match ($value) {
@@ -76,21 +75,25 @@ class LeaveRequestsTable
                     }),
 
                 SelectFilter::make('status')
-                    ->label('Filter by Status')
+                    ->label(__('leave_requests.filters.status'))
                     ->options([
-                        'Pending' => 'Pending',
-                        'Approved' => 'Approved',
-                        'Rejected' => 'Rejected',
+                        'Pending' => __('leave_requests.statuses.Pending'),
+                        'Approved' => __('leave_requests.statuses.Approved'),
+                        'Rejected' => __('leave_requests.statuses.Rejected'),
                     ])
                     ->query(function (Builder $query, array $data) {
                         return $query->when($data['value'], fn($query, $value) => $query->where('status', $value));
                     }),
             ])
             ->recordActions([
-                ViewAction::make(),
+                ViewAction::make()
+                    ->label(__('leave_requests.actions.view')),
             ])
             ->toolbarActions([
-                BulkActionGroup::make([]),
+                BulkActionGroup::make([
+                    DeleteBulkAction::make()
+                        ->label(__('leave_requests.actions.delete')),
+                ]),
             ]);
     }
 }

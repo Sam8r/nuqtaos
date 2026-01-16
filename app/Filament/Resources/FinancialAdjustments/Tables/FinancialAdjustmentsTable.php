@@ -16,60 +16,73 @@ class FinancialAdjustmentsTable
 {
     public static function configure(Table $table): Table
     {
-        $currency = Setting::value('salary_currency');
+        $currency = Setting::value('salary_currency') ?? 'USD';
 
         return $table
             ->columns([
                 TextColumn::make('employee.name')
-                    ->label('Employee')
+                    ->label(__('financial_adjustments.fields.employee'))
                     ->searchable(),
 
                 BadgeColumn::make('type')
+                    ->label(__('financial_adjustments.fields.type'))
                     ->colors([
                         'success' => 'Bonus',
                         'danger'  => 'Deduction',
-                    ]),
+                    ])
+                    ->formatStateUsing(fn ($state) => __('financial_adjustments.types.' . $state)),
 
                 TextColumn::make('category')
-                    ->badge(),
+                    ->label(__('financial_adjustments.fields.category'))
+                    ->badge()
+                    ->formatStateUsing(fn ($state) => __('financial_adjustments.categories.' . $state)),
 
                 TextColumn::make('amount')
+                    ->label(__('financial_adjustments.fields.amount'))
                     ->money($currency),
 
                 TextColumn::make('days_count')
-                    ->label('Days'),
+                    ->label(__('financial_adjustments.fields.days_count')),
 
                 TextColumn::make('status')
+                    ->label(__('financial_adjustments.fields.status'))
                     ->badge()
                     ->colors([
                         'warning' => 'Pending',
                         'success' => 'Processed',
                         'danger'  => 'Rejected',
-                    ]),
+                    ])
+                    ->formatStateUsing(fn ($state) => __('financial_adjustments.statuses.' . $state)),
 
                 TextColumn::make('processing_date')
+                    ->label(__('financial_adjustments.fields.processing_date'))
                     ->date(),
             ])
             ->filters([
                 SelectFilter::make('type')
+                    ->label(__('financial_adjustments.filters.type'))
                     ->options([
-                        'Bonus' => 'Bonus',
-                        'Deduction' => 'Deduction',
+                        'Bonus' => __('financial_adjustments.types.Bonus'),
+                        'Deduction' => __('financial_adjustments.types.Deduction'),
                     ]),
                 SelectFilter::make('status')
+                    ->label(__('financial_adjustments.filters.status'))
                     ->options([
-                        'Pending' => 'Pending',
-                        'Processed' => 'Processed',
-                        'Rejected' => 'Rejected',
+                        'Pending' => __('financial_adjustments.statuses.Pending'),
+                        'Processed' => __('financial_adjustments.statuses.Processed'),
+                        'Rejected' => __('financial_adjustments.statuses.Rejected'),
                     ]),
             ])
             ->recordActions([
-                ViewAction::make(),
-                EditAction::make(),
+                ViewAction::make()
+                    ->label(__('financial_adjustments.actions.view')),
+                EditAction::make()
+                    ->label(__('financial_adjustments.actions.edit')),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
-                    DeleteBulkAction::make(),
+                    DeleteBulkAction::make()
+                        ->label(__('financial_adjustments.actions.delete')),
                 ]),
             ]);
     }

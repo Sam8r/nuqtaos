@@ -26,6 +26,21 @@ class ClientResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'contact_person_details';
 
+    public static function getNavigationLabel(): string
+    {
+        return __('clients.navigation_label');
+    }
+
+    public static function getModelLabel(): string
+    {
+        return __('clients.model_label');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('clients.plural_model_label');
+    }
+
     public static function form(Schema $schema): Schema
     {
         return ClientForm::configure($schema);

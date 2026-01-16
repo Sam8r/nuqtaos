@@ -16,33 +16,33 @@ class AttendanceForm
             ->components([
                 DatePicker::make('date')
                     ->disabled()
-                    ->label('Date'),
+                    ->label(__('attendances.fields.date')),
 
                 Select::make('employee_id')
                     ->relationship('employee', 'name')
                     ->disabled()
-                    ->label('Employee'),
+                    ->label(__('attendances.fields.employee')),
 
                 TimePicker::make('check_in')
-                    ->label('Check In')
+                    ->label(__('attendances.fields.check_in'))
                     ->seconds(false),
 
                 TimePicker::make('check_out')
-                    ->label('Check Out')
+                    ->label(__('attendances.fields.check_out'))
                     ->seconds(false)
                     ->after('check_in'),
 
                 TextInput::make('break_duration')
-                    ->label('Break Duration (minutes)')
+                    ->label(__('attendances.fields.break_duration_minutes'))
                     ->numeric()
                     ->disabled(),
 
                 TextInput::make('total_working_hours')
-                    ->label('Total Working Hours')
+                    ->label(__('attendances.fields.total_working_hours'))
                     ->disabled(),
 
                 TextInput::make('overtime_hours')
-                    ->label('Overtime Hours')
+                    ->label(__('attendances.fields.overtime_hours'))
                     ->disabled(),
             ]);
     }

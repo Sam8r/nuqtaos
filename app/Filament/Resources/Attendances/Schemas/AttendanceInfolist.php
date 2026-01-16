@@ -12,34 +12,34 @@ class AttendanceInfolist
         return $schema
             ->components([
                 TextEntry::make('date')
-                    ->label('Date')
+                    ->label(__('attendances.fields.date'))
                     ->date(),
 
                 TextEntry::make('employee.name')
-                    ->label('Employee'),
+                    ->label(__('attendances.fields.employee_name')),
 
                 TextEntry::make('check_in')
-                    ->label('Check In')
+                    ->label(__('attendances.fields.check_in'))
                     ->dateTime(),
 
                 TextEntry::make('check_out')
-                    ->label('Check Out')
+                    ->label(__('attendances.fields.check_out'))
                     ->dateTime()
-                    ->placeholder('Not checked out'),
+                    ->placeholder(__('attendances.messages.not_checked_out')),
 
                 TextEntry::make('break_duration')
-                    ->label('Break Duration')
-                    ->suffix(' minutes')
+                    ->label(__('attendances.fields.break_duration'))
+                    ->suffix(__('attendances.suffixes.minutes'))
                     ->default('0'),
 
                 TextEntry::make('total_working_hours')
-                    ->label('Total Working Hours')
-                    ->suffix(' hrs')
-                    ->placeholder('Not calculated'),
+                    ->label(__('attendances.fields.total_working_hours'))
+                    ->suffix(__('attendances.suffixes.hours'))
+                    ->placeholder(__('attendances.messages.not_calculated')),
 
                 TextEntry::make('overtime_hours')
-                    ->label('Overtime Hours')
-                    ->suffix(' hrs'),
+                    ->label(__('attendances.fields.overtime_hours'))
+                    ->suffix(__('attendances.suffixes.hours')),
             ]);
     }
 }

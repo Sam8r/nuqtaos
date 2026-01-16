@@ -25,46 +25,50 @@ class QuotationsTable
         return $table
             ->columns([
                 TextColumn::make('number')
-                    ->label('Quotation #')
+                    ->label(__('quotations.fields.number'))
                     ->sortable()
                     ->searchable(),
 
                 TextColumn::make('issue_date')
+                    ->label(__('quotations.fields.issue_date'))
                     ->sortable()
                     ->date(),
 
                 TextColumn::make('valid_until')
+                    ->label(__('quotations.fields.valid_until'))
                     ->sortable()
                     ->date(),
 
                 TextColumn::make('client.company_name')
-                    ->label('Client')
+                    ->label(__('quotations.fields.client'))
                     ->sortable()
                     ->searchable(),
 
                 BadgeColumn::make('computed_status')
-                    ->label('Status')
+                    ->label(__('quotations.fields.computed_status'))
                     ->colors([
                         'draft' => 'secondary',
                         'sent' => 'primary',
                         'approved' => 'success',
                         'rejected' => 'danger',
-                        'warning' => 'expired',
-                    ]),
+                        'expired' => 'warning',
+                    ])
+                    ->formatStateUsing(fn (string $state) => __('quotations.computed_statuses.' . strtolower($state))),
 
                 TextColumn::make('total')
+                    ->label(__('quotations.fields.total'))
                     ->sortable()
                     ->money(fn ($record) => $record->currency),
             ])
             ->filters([
                 SelectFilter::make('computed_status')
-                    ->label('Status')
+                    ->label(__('quotations.filters.status'))
                     ->options([
-                        'expired' => 'Expired',
-                        'draft' => 'Draft',
-                        'sent' => 'Sent',
-                        'approved' => 'Approved',
-                        'rejected' => 'Rejected',
+                        'expired' => __('quotations.filters.status_options.expired'),
+                        'draft' => __('quotations.filters.status_options.draft'),
+                        'sent' => __('quotations.filters.status_options.sent'),
+                        'approved' => __('quotations.filters.status_options.approved'),
+                        'rejected' => __('quotations.filters.status_options.rejected'),
                     ])
                     ->query(function (Builder $query, array $data) {
                         if ($data['value'] === 'expired') {
@@ -81,16 +85,16 @@ class QuotationsTable
                 ViewAction::make(),
                 EditAction::make(),
                 Action::make('print')
-                    ->label('Print')
+                    ->label(__('quotations.actions.print'))
                     ->icon('heroicon-o-document-text')
                     ->color('primary')
-                    ->modalHeading('Select Print Language')
+                    ->modalHeading(__('quotations.prompts.select_print_language'))
                     ->form([
                         Radio::make('lang')
-                            ->label('Language')
+                            ->label(__('quotations.prompts.print_language'))
                             ->options([
-                                'ar' => 'Arabic',
-                                'en' => 'English',
+                                'ar' => __('quotations.languages.ar'),
+                                'en' => __('quotations.languages.en'),
                             ])
                             ->default('en')
                             ->required(),

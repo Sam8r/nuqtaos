@@ -23,25 +23,38 @@ class InvoiceForm
     {
         $defaultTax = Setting::first()?->tax ?? 0;
 
+        $locale = strtolower(str_replace('_', '-', app()->getLocale() ?? 'en'));
+        $primaryLocale = explode('-', $locale)[0];
+
+        $currencyPath = base_path("vendor/umpirsky/currency-list/data/{$primaryLocale}/currency.json");
+
+        if (! File::exists($currencyPath)) {
+            $currencyPath = base_path('vendor/umpirsky/currency-list/data/en/currency.json');
+        }
+
+        $currencies = json_decode(File::get($currencyPath), true);
+
         return $schema->components([
             Grid::make(3)->schema([
                 TextInput::make('number')
-                    ->label('Invoice #')
+                    ->label(__('invoices.fields.number'))
                     ->required()
                     ->unique(ignoreRecord: true)
                     ->default(fn () => 'INV-' . now()->format('Ymd') . '-' . Str::upper(Str::random(4))),
 
                 DatePicker::make('issue_date')
+                    ->label(__('invoices.fields.issue_date'))
                     ->required()
                     ->default(now())
                     ->live(),
 
                 DatePicker::make('due_date')
+                    ->label(__('invoices.fields.due_date'))
                     ->required()
                     ->minDate(fn (callable $get) => $get('issue_date')),
 
                 TextInput::make('tax_value')
-                    ->label('Tax Value')
+                    ->label(__('invoices.fields.tax_value'))
                     ->numeric()
                     ->minValue(0)
                     ->default(0)
@@ -58,7 +71,7 @@ class InvoiceForm
                     }),
 
                 TextInput::make('tax_percent')
-                    ->label('Tax (%)')
+                    ->label(__('invoices.fields.tax_percent'))
                     ->numeric()
                     ->default($defaultTax)
                     ->minValue(0)
@@ -77,25 +90,20 @@ class InvoiceForm
                     }),
 
                 Select::make('status')
+                    ->label(__('invoices.fields.status'))
                     ->options([
-                        'Draft' => 'Draft',
-                        'Pending' => 'Pending',
-                        'Partially Paid' => 'Partially Paid',
-                        'Paid' => 'Paid',
-                        'Overdue' => 'Overdue',
+                        'Draft' => __('invoices.statuses.Draft'),
+                        'Pending' => __('invoices.statuses.Pending'),
+                        'Partially Paid' => __('invoices.statuses.Partially Paid'),
+                        'Paid' => __('invoices.statuses.Paid'),
+                        'Overdue' => __('invoices.statuses.Overdue'),
                     ])
                     ->default('Draft')
                     ->required(),
 
                 Select::make('currency')
-                    ->label('Currency')
-                    ->options(function () {
-                        $currencies = json_decode(
-                            File::get(base_path('vendor/umpirsky/currency-list/data/en/currency.json')),
-                            true
-                        );
-                        return $currencies;
-                    })
+                    ->label(__('invoices.fields.currency'))
+                    ->options($currencies)
                     ->searchable()
                     ->required()
                     ->default(fn () => Setting::first()?->currency)
@@ -129,20 +137,24 @@ class InvoiceForm
             ]),
 
             Select::make('client_id')
+                ->label(__('invoices.fields.client'))
                 ->relationship('client', 'company_name')
                 ->searchable()
                 ->preload()
                 ->required(),
 
             Textarea::make('payment_terms')
+                ->label(__('invoices.fields.payment_terms'))
                 ->columnSpanFull(),
 
             Repeater::make('items')
+                ->label(__('invoices.fields.items'))
                 ->relationship()
                 ->columnSpanFull()
                 ->live(onBlur: true)
                 ->schema([
                     Select::make('product_id')
+                        ->label(__('invoices.fields.product'))
                         ->relationship('product', 'name')
                         ->searchable()
                         ->preload()
@@ -183,28 +195,29 @@ class InvoiceForm
                         }),
 
                     TextInput::make('custom_name')
-                        ->label('Custom Product Name')
+                        ->label(__('invoices.fields.custom_name'))
                         ->nullable()
                         ->disabled(fn (callable $get) => (bool) $get('product_id')),
 
-                    Textarea::make('description'),
+                    Textarea::make('description')
+                        ->label(__('invoices.fields.description')),
 
                     Grid::make(2)->schema([
                         TextInput::make('original_price')
-                            ->label('Original Price')
+                            ->label(__('invoices.fields.original_price'))
                             ->numeric()
                             ->readOnly()
                             ->visible(fn (callable $get) => filled($get('original_price'))),
 
                         TextInput::make('original_currency')
-                            ->label('Original Currency')
+                            ->label(__('invoices.fields.original_currency'))
                             ->readOnly()
                             ->visible(fn (callable $get) => filled($get('original_currency'))),
                     ]),
 
                     Grid::make(5)->schema([
                         TextInput::make('unit_price')
-                            ->label('Unit Price (Converted)')
+                            ->label(__('invoices.fields.unit_price_converted'))
                             ->numeric()
                             ->required()
                             ->live(debounce: 300)
@@ -215,6 +228,7 @@ class InvoiceForm
                             }),
 
                         TextInput::make('quantity')
+                            ->label(__('invoices.fields.quantity'))
                             ->numeric()
                             ->required()
                             ->default(1)
@@ -226,7 +240,7 @@ class InvoiceForm
                             }),
 
                         TextInput::make('discount_value')
-                            ->label('Discount Value')
+                            ->label(__('invoices.fields.discount_value'))
                             ->numeric()
                             ->default(0)
                             ->live(debounce: 300)
@@ -237,7 +251,7 @@ class InvoiceForm
                             }),
 
                         TextInput::make('discount_percent')
-                            ->label('Discount (%)')
+                            ->label(__('invoices.fields.discount_percent'))
                             ->numeric()
                             ->default(0)
                             ->live(debounce: 300)
@@ -248,7 +262,7 @@ class InvoiceForm
                             }),
 
                         TextInput::make('total_price')
-                            ->label('Total')
+                            ->label(__('invoices.fields.total_price'))
                             ->numeric()
                             ->readOnly()
                             ->dehydrated()
@@ -264,19 +278,19 @@ class InvoiceForm
 
             Grid::make(4)->schema([
                 Placeholder::make('display_subtotal')
-                    ->label('Subtotal')
+                    ->label(__('invoices.fields.subtotal'))
                     ->content(fn (callable $get) => number_format((float)$get('subtotal'), 2) . ' ' . $get('currency')),
 
                 Placeholder::make('display_discount_total')
-                    ->label('Discount Total')
+                    ->label(__('invoices.fields.discount_total'))
                     ->content(fn (callable $get) => number_format((float)$get('discount_total'), 2) . ' ' . $get('currency')),
 
                 Placeholder::make('display_tax_total')
-                    ->label('Tax Total')
+                    ->label(__('invoices.fields.tax_total'))
                     ->content(fn (callable $get) => number_format((float)$get('tax_total'), 2) . ' ' . $get('currency')),
 
                 Placeholder::make('display_total')
-                    ->label('Grand Total')
+                    ->label(__('invoices.fields.grand_total'))
                     ->content(fn (callable $get) => number_format((float)$get('total'), 2) . ' ' . $get('currency'))
                     ->extraAttributes(['class' => 'font-bold text-xl text-primary-600']),
             ]),

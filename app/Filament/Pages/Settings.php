@@ -27,6 +27,16 @@ class Settings extends Page implements HasForms
 
     public ?array $data = [];
 
+    public static function getNavigationLabel(): string
+    {
+        return __('settings.page.title');
+    }
+
+    public function getTitle(): string
+    {
+        return __('settings.page.title');
+    }
+
     public function mount(): void
     {
         $this->form->fill(
@@ -36,22 +46,26 @@ class Settings extends Page implements HasForms
 
     protected function getFormSchema(): array
     {
-        $currencies = json_decode(
-            File::get(
-                base_path('vendor/umpirsky/currency-list/data/en/currency.json')
-            ),
-            true
-        );
+        $locale = strtolower(str_replace('_', '-', app()->getLocale() ?? 'en'));
+        $primaryLocale = explode('-', $locale)[0];
+
+        $currencyPath = base_path("vendor/umpirsky/currency-list/data/{$primaryLocale}/currency.json");
+
+        if (! File::exists($currencyPath)) {
+            $currencyPath = base_path('vendor/umpirsky/currency-list/data/en/currency.json');
+        }
+
+        $currencies = json_decode(File::get($currencyPath), true);
 
         return [
             TextInput::make('name')
-                ->label('Site Name')
+                ->label(__('settings.fields.name'))
                 ->required()
                 ->maxLength(255)
                 ->nullable(),
 
             FileUpload::make('logo')
-                ->label('Site Logo')
+                ->label(__('settings.fields.logo'))
                 ->directory('settings')
                 ->image()
                 ->disk('public')
@@ -59,148 +73,135 @@ class Settings extends Page implements HasForms
                 ->nullable(),
 
             TextInput::make('phone')
-                ->label('Phone Number')
+                ->label(__('settings.fields.phone'))
                 ->tel()
                 ->nullable(),
 
             TextInput::make('email')
-                ->label('Email Address')
+                ->label(__('settings.fields.email'))
                 ->email()
                 ->nullable(),
 
             TextInput::make('address')
-                ->label('Address')
+                ->label(__('settings.fields.address'))
                 ->maxLength(500)
                 ->nullable(),
 
             TextInput::make('tax_number')
-                ->label('Tax Number')
+                ->label(__('settings.fields.tax_number'))
                 ->maxLength(50)
                 ->nullable(),
 
             Select::make('language')
-                ->label('Default Language')
-                ->options([
-                    'en' => 'English',
-                    'ar' => 'Arabic',
-                ])
+                ->label(__('settings.fields.language'))
+                ->options(collect(__('settings.languages'))
+                    ->mapWithKeys(fn ($label, $value) => [$value => $label])
+                    ->toArray())
                 ->nullable(),
 
             Select::make('currency')
-                ->label('Currency')
+                ->label(__('settings.fields.currency'))
                 ->options($currencies)
                 ->searchable()
                 ->nullable(),
 
             Select::make('salary_currency')
-                ->label('Salary Currency')
+                ->label(__('settings.fields.salary_currency'))
                 ->options($currencies)
                 ->searchable()
                 ->nullable(),
 
             TextInput::make('tax')
-                ->label('Tax %')
+                ->label(__('settings.fields.tax'))
                 ->numeric()
                 ->minValue(0)
                 ->maxValue(100)
                 ->nullable(),
 
             Select::make('default_printable_language')
-                ->label('Default Invoice/Quotation Language')
-                ->options([
-                    null => 'None',
-                    'en' => 'English',
-                    'ar' => 'Arabic',
-                ])
+                ->label(__('settings.fields.default_printable_language'))
+                ->options(
+                    [null => __('settings.options.invoice_languages.none')]
+                    + collect(__('settings.languages'))
+                        ->mapWithKeys(fn ($label, $value) => [$value => $label])
+                        ->toArray()
+                )
                 ->nullable(),
 
             TextInput::make('break_minutes')
-                ->label('Default Break Minutes')
+                ->label(__('settings.fields.break_minutes'))
                 ->numeric()
                 ->minValue(0)
                 ->default(0)
                 ->nullable(),
 
             TextInput::make('overtime_minutes')
-                ->label('Default Overtime Minutes')
+                ->label(__('settings.fields.overtime_minutes'))
                 ->numeric()
                 ->minValue(0)
                 ->default(30)
                 ->nullable(),
 
             TextInput::make('days_off_limit')
-                ->label('Days Off Limit')
+                ->label(__('settings.fields.days_off_limit'))
                 ->numeric()
                 ->minValue(0)
                 ->default(5)
                 ->nullable(),
 
             TextInput::make('encashment_limit')
-                ->label('Encashment Limit')
+                ->label(__('settings.fields.encashment_limit'))
                 ->numeric()
                 ->minValue(0)
                 ->default(2)
                 ->nullable(),
 
             Select::make('weekends')
+                ->label(__('settings.fields.weekends'))
                 ->multiple()
-                ->options([
-                    'Saturday' => 'Saturday',
-                    'Sunday' => 'Sunday',
-                    'Monday' => 'Monday',
-                    'Tuesday' => 'Tuesday',
-                    'Wednesday' => 'Wednesday',
-                    'Thursday' => 'Thursday',
-                    'Friday' => 'Friday',
-                ]),
+                ->options(__('settings.options.weekdays')),
 
             TextInput::make('default_payroll_start_day')
+                ->label(__('settings.fields.default_payroll_start_day'))
                 ->numeric(),
 
             Select::make('overtime_type')
-                ->label('Overtime Type')
-                ->options([
-                    'Percentage' => 'Percentage',
-                    'Fixed' => 'Fixed',
-                ])
+                ->label(__('settings.fields.overtime_type'))
+                ->options(__('settings.options.overtime_types'))
                 ->default('Percentage'),
 
             TextInput::make('overtime_value')
-                ->label('Overtime Value')
+                ->label(__('settings.fields.overtime_value'))
                 ->numeric()
                 ->minValue(0)
                 ->default(1.5)
                 ->nullable(),
 
             TextInput::make('default_work_from')
-                ->label('Default Work From')
+                ->label(__('settings.fields.default_work_from'))
                 ->type('time')
                 ->default('09:00')
                 ->nullable(),
 
             TextInput::make('default_work_to')
-                ->label('Default Work To')
+                ->label(__('settings.fields.default_work_to'))
                 ->type('time')
                 ->default('17:00')
                 ->nullable(),
 
             TextInput::make('grace_period_minutes')
-                ->label('Grace Period Minutes')
+                ->label(__('settings.fields.grace_period_minutes'))
                 ->numeric()
                 ->minValue(0)
                 ->default(15)
                 ->nullable(),
 
             Repeater::make('work_type_days')
-                ->label('Work Schedule per Contract Type')
+                ->label(__('settings.fields.work_type_days'))
                 ->schema([
                     Select::make('type')
-                        ->label('Contract Type')
-                        ->options([
-                            'Full Time' => 'Full Time',
-                            'Part Time' => 'Part Time',
-                            'Intern' => 'Intern',
-                        ])
+                        ->label(__('settings.fields.contract_type'))
+                        ->options(__('settings.options.contract_types'))
                         ->required()
                         ->distinct()
                         ->disableOptionWhen(function ($value, $state, $get) {
@@ -214,49 +215,38 @@ class Settings extends Page implements HasForms
                         ->live(),
 
                     Select::make('days')
-                        ->label('Working Days')
+                        ->label(__('settings.fields.working_days'))
                         ->multiple()
-                        ->options([
-                            'Saturday' => 'Saturday',
-                            'Sunday' => 'Sunday',
-                            'Monday' => 'Monday',
-                            'Tuesday' => 'Tuesday',
-                            'Wednesday' => 'Wednesday',
-                            'Thursday' => 'Thursday',
-                            'Friday' => 'Friday',
-                        ])
+                        ->options(__('settings.options.weekdays'))
                         ->required(),
                 ])
                 ->columns(2)
                 ->maxItems(3),
 
-            Section::make('Work Hours & Overtime')
+            Section::make(__('settings.sections.work_hours.title'))
                 ->schema([
                     Select::make('overtime_active_mode')
-                        ->label('Current Overtime Calculation Method')
-                        ->options([
-                            'percentage' => 'Percentage of Hourly Salary',
-                            'fixed' => 'Fixed Hourly Rate',
-                        ])
+                        ->label(__('settings.fields.overtime_active_mode'))
+                        ->options(__('settings.options.overtime_modes'))
                         ->reactive(),
 
                     TextInput::make('overtime_percentage')
-                        ->label('Overtime Percentage (e.g., 1.5)')
+                        ->label(__('settings.fields.overtime_percentage'))
                         ->numeric()
                         ->default(1.5),
 
                     TextInput::make('overtime_fixed_rate')
-                        ->label('Overtime Fixed Rate (Per Hour)')
+                        ->label(__('settings.fields.overtime_fixed_rate'))
                         ->numeric()
                         ->default(0)
-                        ->prefix('$'),
+                        ->prefix(__('settings.prefixes.currency')),
                 ])->columns(3),
 
-            Section::make('Office Location & Geofencing')
-                ->description('Pin your office on the map and set the allowed radius for attendance.')
+            Section::make(__('settings.sections.geofencing.title'))
+                ->description(__('settings.sections.geofencing.description'))
                 ->schema([
                     Map::make('location')
-                        ->label('Select Office Location')
+                        ->label(__('settings.fields.location'))
                         ->columnSpanFull()
                         ->defaultLocation(latitude: 30.0444, longitude: 31.2357)
                         ->showMyLocationButton(true)
@@ -288,21 +278,21 @@ class Settings extends Page implements HasForms
                     Grid::make(3)
                         ->schema([
                             TextInput::make('company_latitude')
-                                ->label('Latitude')
+                                ->label(__('settings.fields.company_latitude'))
                                 ->numeric()
                                 ->readOnly(),
 
                             TextInput::make('company_longitude')
-                                ->label('Longitude')
+                                ->label(__('settings.fields.company_longitude'))
                                 ->numeric()
                                 ->readOnly(),
 
                             TextInput::make('radius_meter')
-                                ->label('Allowed Radius (Meters)')
+                                ->label(__('settings.fields.radius_meter'))
                                 ->numeric()
                                 ->default(100)
-                                ->suffix('m')
-                                ->live() // Essential: re-draws the map circle instantly as you type,
+                                ->suffix(__('settings.suffixes.meters'))
+                                ->live()
                         ])
                 ])
         ];
@@ -323,7 +313,7 @@ class Settings extends Page implements HasForms
 
         Notification::make()
             ->success()
-            ->title('Settings saved successfully')
+            ->title(__('settings.messages.saved'))
             ->send();
     }
 

@@ -7,7 +7,6 @@ use Filament\Widgets\StatsOverviewWidget\Stat;
 use Modules\Employees\Models\Employee;
 use Modules\Invoices\Models\Invoice;
 use Modules\Projects\Models\Project;
-use Illuminate\Support\Carbon;
 use Modules\Settings\Models\Setting;
 
 class AdminStatsOverview extends BaseWidget
@@ -18,32 +17,31 @@ class AdminStatsOverview extends BaseWidget
     {
         $currentMonth = now()->month;
         $currentYear = now()->year;
-
         $currency = Setting::value('currency');
 
         return [
-            Stat::make('Total Employees', Employee::count())
-                ->description('Number of registered employees')
+            Stat::make(__('filament.total_employees'), Employee::count())
+                ->description(__('filament.number_of_registered_employees'))
                 ->descriptionIcon('heroicon-o-users')
                 ->color('primary'),
 
-            Stat::make('Total Projects', Project::count())
-                ->description('Number of active projects')
+            Stat::make(__('filament.total_projects'), Project::count())
+                ->description(__('filament.number_of_active_projects'))
                 ->descriptionIcon('heroicon-o-folder')
                 ->color('success'),
 
-            Stat::make('Invoices', Invoice::count())
-                ->description('This month: ' . Invoice::whereMonth('created_at', $currentMonth)
-                        ->whereYear('created_at', $currentYear)
-                        ->count())
+            Stat::make(__('filament.invoices'), Invoice::count())
+                ->description(__('filament.this_month', ['count' => Invoice::whereMonth('created_at', $currentMonth)
+                    ->whereYear('created_at', $currentYear)
+                    ->count()]))
                 ->descriptionIcon('heroicon-o-document-text')
                 ->color('warning'),
 
-            Stat::make('Monthly Revenue',
+            Stat::make(__('filament.monthly_revenue'),
                 number_format(Invoice::whereMonth('created_at', $currentMonth)
                     ->whereYear('created_at', $currentYear)
                     ->sum('total'), 2) . ' ' . $currency)
-                ->description('Total Revenue: ' . number_format(Invoice::sum('total'), 2) . ' ' . $currency)
+                ->description(__('filament.total_revenue', ['amount' => number_format(Invoice::sum('total'), 2) . ' ' . $currency]))
                 ->descriptionIcon('heroicon-o-currency-dollar')
                 ->color('success'),
         ];

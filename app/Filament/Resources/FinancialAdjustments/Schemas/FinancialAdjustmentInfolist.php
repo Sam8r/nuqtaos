@@ -15,31 +15,33 @@ class FinancialAdjustmentInfolist
         return $schema
             ->components([
                 TextEntry::make('employee.name')
-                    ->label('Employee'),
+                    ->label(__('financial_adjustments.fields.employee')),
 
                 TextEntry::make('type')
                     ->badge()
                     ->colors([
                         'success' => 'Bonus',
                         'danger' => 'Deduction',
-                    ]),
+                    ])
+                    ->formatStateUsing(fn ($state) => __('financial_adjustments.types.' . $state)),
 
                 TextEntry::make('category')
-                    ->label('Category'),
+                    ->label(__('financial_adjustments.fields.category'))
+                    ->formatStateUsing(fn ($state) => __('financial_adjustments.categories.' . $state)),
 
                 TextEntry::make('amount')
-                    ->label('Amount')
+                    ->label(__('financial_adjustments.fields.amount'))
                     ->money($currency),
 
                 TextEntry::make('days_count')
-                    ->label('Days Count'),
+                    ->label(__('financial_adjustments.fields.days_count')),
 
                 TextEntry::make('processing_date')
-                    ->label('Processing Date')
+                    ->label(__('financial_adjustments.fields.processing_date'))
                     ->date(),
 
                 TextEntry::make('reason')
-                    ->label('Reason')
+                    ->label(__('financial_adjustments.fields.reason'))
                     ->columnSpanFull(),
 
                 TextEntry::make('status')
@@ -48,10 +50,11 @@ class FinancialAdjustmentInfolist
                         'warning' => 'Pending',
                         'success' => 'Processed',
                         'danger' => 'Rejected',
-                    ]),
+                    ])
+                    ->formatStateUsing(fn ($state) => __('financial_adjustments.statuses.' . $state)),
 
                 TextEntry::make('created_at')
-                    ->label('Created At')
+                    ->label(__('financial_adjustments.fields.created_at'))
                     ->dateTime(),
             ]);
     }

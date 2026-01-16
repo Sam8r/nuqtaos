@@ -23,25 +23,38 @@ class QuotationForm
     {
         $defaultTax = Setting::first()?->tax ?? 0;
 
+        $locale = strtolower(str_replace('_', '-', app()->getLocale() ?? 'en'));
+        $primaryLocale = explode('-', $locale)[0];
+
+        $currencyPath = base_path("vendor/umpirsky/currency-list/data/{$primaryLocale}/currency.json");
+
+        if (! File::exists($currencyPath)) {
+            $currencyPath = base_path('vendor/umpirsky/currency-list/data/en/currency.json');
+        }
+
+        $currencies = json_decode(File::get($currencyPath), true);
+
         return $schema->components([
             Grid::make(3)->schema([
                 TextInput::make('number')
-                    ->label('Quotation #')
+                    ->label(__('quotations.fields.number'))
                     ->required()
                     ->unique(ignoreRecord: true)
                     ->default(fn () => 'QT-' . now()->format('Ymd') . '-' . Str::upper(Str::random(4))),
 
                 DatePicker::make('issue_date')
+                    ->label(__('quotations.fields.issue_date'))
                     ->required()
                     ->default(now())
                     ->live(),
 
                 DatePicker::make('valid_until')
+                    ->label(__('quotations.fields.valid_until'))
                     ->required()
                     ->minDate(fn (callable $get) => $get('issue_date')),
 
                 TextInput::make('tax_value')
-                    ->label('Tax Value')
+                    ->label(__('quotations.fields.tax_value'))
                     ->numeric()
                     ->minValue(0)
                     ->default(0)
@@ -58,7 +71,7 @@ class QuotationForm
                     }),
 
                 TextInput::make('tax_percent')
-                    ->label('Tax (%)')
+                    ->label(__('quotations.fields.tax_percent'))
                     ->numeric()
                     ->default($defaultTax)
                     ->minValue(0)
@@ -77,27 +90,14 @@ class QuotationForm
                     }),
 
                 Select::make('status')
-                    ->options([
-                        'Draft' => 'Draft',
-                        'Sent' => 'Sent',
-                        'Under Review' => 'Under Review',
-                        'Accepted' => 'Accepted',
-                        'Rejected' => 'Rejected',
-                    ])
+                    ->label(__('quotations.fields.status'))
+                    ->options(__('quotations.form_statuses'))
                     ->default('Draft')
                     ->required(),
 
                 Select::make('currency')
-                    ->label('Currency')
-                    ->options(function () {
-                        $currencies = json_decode(
-                            File::get(
-                                base_path('vendor/umpirsky/currency-list/data/en/currency.json')
-                            ),
-                            true
-                        );
-                        return $currencies;
-                    })
+                    ->label(__('quotations.fields.currency'))
+                    ->options($currencies)
                     ->searchable()
                     ->required()
                     ->default(fn () => Setting::first()?->currency)
@@ -177,20 +177,24 @@ class QuotationForm
             ]),
 
             Select::make('client_id')
+                ->label(__('quotations.fields.client'))
                 ->relationship('client', 'company_name')
                 ->searchable()
                 ->preload()
                 ->required(),
 
             Textarea::make('terms_and_conditions')
+                ->label(__('quotations.fields.terms_and_conditions'))
                 ->columnSpanFull(),
 
             Repeater::make('items')
                 ->relationship()
+                ->label(__('quotations.fields.items'))
                 ->columnSpanFull()
                 ->live(onBlur: true)
                 ->schema([
                     Select::make('product_id')
+                        ->label(__('quotations.fields.product'))
                         ->relationship('product', 'name')
                         ->searchable()
                         ->preload()
@@ -248,22 +252,23 @@ class QuotationForm
                         }),
 
                     TextInput::make('custom_name')
-                        ->label('Custom Product Name')
+                        ->label(__('quotations.fields.custom_name'))
                         ->nullable()
                         ->disabled(fn (callable $get) => (bool) $get('product_id')),
 
-                    Textarea::make('description'),
+                    Textarea::make('description')
+                        ->label(__('quotations.fields.description')),
 
                     Grid::make(2)->schema([
                         TextInput::make('original_price')
-                            ->label('Original Price')
+                            ->label(__('quotations.fields.original_price'))
                             ->numeric()
                             ->readOnly()
                             ->dehydrated()
                             ->visible(fn (callable $get) => filled($get('original_price'))),
 
                         TextInput::make('original_currency')
-                            ->label('Original Currency')
+                            ->label(__('quotations.fields.original_currency'))
                             ->readOnly()
                             ->dehydrated()
                             ->visible(fn (callable $get) => filled($get('original_currency'))),
@@ -271,7 +276,7 @@ class QuotationForm
 
                     Grid::make(5)->schema([
                         TextInput::make('unit_price')
-                            ->label('Unit Price (Converted)')
+                            ->label(__('quotations.fields.unit_price_converted'))
                             ->minValue(1)
                             ->numeric()
                             ->required()
@@ -283,6 +288,7 @@ class QuotationForm
                             }),
 
                         TextInput::make('quantity')
+                            ->label(__('quotations.fields.quantity'))
                             ->numeric()
                             ->required()
                             ->default(1)
@@ -294,7 +300,7 @@ class QuotationForm
                             }),
 
                         TextInput::make('discount_value')
-                            ->label('Discount Value')
+                            ->label(__('quotations.fields.discount_value'))
                             ->numeric()
                             ->default(0)
                             ->minValue(0)
@@ -311,7 +317,7 @@ class QuotationForm
                             }),
 
                         TextInput::make('discount_percent')
-                            ->label('Discount (%)')
+                            ->label(__('quotations.fields.discount_percent'))
                             ->numeric()
                             ->default(0)
                             ->minValue(0)
@@ -329,7 +335,7 @@ class QuotationForm
                             }),
 
                         TextInput::make('total_price')
-                            ->label('Total')
+                            ->label(__('quotations.fields.total_price'))
                             ->numeric()
                             ->readOnly()
                             ->dehydrated()
@@ -350,19 +356,19 @@ class QuotationForm
 
             Grid::make(4)->schema([
                 Placeholder::make('display_subtotal')
-                    ->label('Subtotal')
+                    ->label(__('quotations.fields.subtotal'))
                     ->content(fn (callable $get) => number_format((float)$get('subtotal'), 2) . ' ' . $get('currency')),
 
                 Placeholder::make('display_discount_total')
-                    ->label('Discount Total')
+                    ->label(__('quotations.fields.discount_total'))
                     ->content(fn (callable $get) => number_format((float)$get('discount_total'), 2) . ' ' . $get('currency')),
 
                 Placeholder::make('display_tax_total')
-                    ->label('Tax Total')
+                    ->label(__('quotations.fields.tax_total'))
                     ->content(fn (callable $get) => number_format((float)$get('tax_total'), 2) . ' ' . $get('currency')),
 
                 Placeholder::make('display_total')
-                    ->label('Grand Total')
+                    ->label(__('quotations.fields.total'))
                     ->content(fn (callable $get) => number_format((float)$get('total'), 2) . ' ' . $get('currency'))
                     ->extraAttributes(['class' => 'font-bold text-xl text-primary-600']),
             ]),

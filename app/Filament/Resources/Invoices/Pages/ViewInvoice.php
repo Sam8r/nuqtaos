@@ -16,7 +16,7 @@ class ViewInvoice extends ViewRecord
     {
         return [
             Action::make('print_arabic')
-                ->label('Print (Arabic)')
+                ->label(__('invoices.actions.print_arabic'))
                 ->icon('heroicon-o-document-text')
                 ->color('gray')
                 ->action(function ($record) {
@@ -25,7 +25,7 @@ class ViewInvoice extends ViewRecord
                 }),
 
             Action::make('print_english')
-                ->label('Print (English)')
+                ->label(__('invoices.actions.print_english'))
                 ->icon('heroicon-o-document-text')
                 ->color('primary')
                 ->action(function ($record) {

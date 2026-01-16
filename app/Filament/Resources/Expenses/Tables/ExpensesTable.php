@@ -20,28 +20,34 @@ class ExpensesTable
         return $table
             ->columns([
                 TextColumn::make('category.name')
-                    ->label('Category'),
+                    ->label(__('expenses.fields.category')),
 
                 TextColumn::make('amount')
+                    ->label(__('expenses.fields.amount'))
                     ->money($currency),
 
                 TextColumn::make('status')
+                    ->label(__('expenses.fields.status'))
                     ->colors([
                         'warning' => 'Pending',
                         'success' => 'Approved',
                         'danger'  => 'Rejected',
                     ])
-                    ->badge(),
+                    ->badge()
+                    ->formatStateUsing(fn (string $state) => __('expenses.statuses.' . $state)),
 
                 TextColumn::make('expense_date')
+                    ->label(__('expenses.fields.expense_date'))
                     ->date(),
             ])
             ->filters([
-                SelectFilter::make('status')->options([
-                    'Pending' => 'Pending',
-                    'Approved' => 'Approved',
-                    'Rejected' => 'Rejected',
-                ]),
+                SelectFilter::make('status')
+                    ->label(__('expenses.filters.status'))
+                    ->options([
+                        'Pending' => __('expenses.statuses.Pending'),
+                        'Approved' => __('expenses.statuses.Approved'),
+                        'Rejected' => __('expenses.statuses.Rejected'),
+                    ]),
             ])
             ->recordActions([
                 ViewAction::make(),

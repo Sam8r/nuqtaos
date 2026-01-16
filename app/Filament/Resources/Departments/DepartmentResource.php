@@ -25,7 +25,24 @@ class DepartmentResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedBuildingOffice2;
 
+    protected static ?string $navigationLabel = null;
+
     protected static ?string $recordTitleAttribute = 'name';
+
+    public static function getNavigationLabel(): string
+    {
+        return __('departments.navigation_label');
+    }
+
+    public static function getModelLabel(): string
+    {
+        return __('departments.model_label');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('departments.plural_model_label');
+    }
 
     public static function form(Schema $schema): Schema
     {

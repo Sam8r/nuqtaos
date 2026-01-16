@@ -20,8 +20,8 @@ class CreateTask extends CreateRecord
             $user = User::find($employee->user_id);
 
             Notification::make()
-                ->title('New Task Assigned')
-                ->body("Task: {$task->title} has been assigned to you.")
+                ->title(__('tasks.notifications.new_task_assigned.title'))
+                ->body(__('tasks.notifications.new_task_assigned.body', ['title' => $task->title]))
                 ->icon('heroicon-o-clipboard-document-list')
                 ->color('success')
                 ->sendToDatabase($user);
